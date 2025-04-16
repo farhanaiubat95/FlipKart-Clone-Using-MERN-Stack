@@ -3,10 +3,10 @@ import DefaultData from './default.js';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
-
 // import routes
 import UserRouter from './routes/userRoute.js';
 import productRouter from './routes/productsRoute.js';
+import paymentRouter from './routes/paymentRouter.js';
 
 
 // Initialize express
@@ -25,5 +25,6 @@ app.use(cors());
 // User Login & Signup
 app.use('/',UserRouter);
 app.use('/',productRouter);
+app.use('/',paymentRouter);
 
 export default app;

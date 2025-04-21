@@ -35,3 +35,15 @@ export const userLogin=async(request, response) => {
         response.status(500).json({ error: e.message });
     }
 }
+
+export const getUserDetails = async (req, res) => {
+    try {
+      const user = await User.findById(req.user.id).select('-password'); // Don't send password
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.status(200).json(user);
+    } catch (err) {
+      res.status(500).json({ message: 'Server error' });
+    }
+  };

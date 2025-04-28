@@ -24,3 +24,12 @@
 
 9.install body-parser - to handle post api
     -> npm i body-parser
+
+10.install jsonwebtoken - to auth role base
+    -> npm i jsonwebtoken
+
+11.install bcrypt - to handle password
+    -> npm i bcrypt
+
+12.install cookie-parser - store token id
+    -> npm i cookie-parser

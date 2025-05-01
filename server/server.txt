@@ -34,4 +34,10 @@
 12.install cookie-parser - store token id
     -> npm i cookie-parser
 
-13. Google Search - Axios Interceptors
+13. install nodemailer
+    -> npm install nodemailer
+
+or  install mailtrap
+    -> npm install mailtrap
+   run for check : node .\server\mailtrap\mailtrap.config.js
+

@@ -42,12 +42,30 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         enum:['admin', 'seller', 'customer'],
-        default: 'customer'
+        default: 'customer',
+        required: true
     },
     password: {
         type: String,
         required: true
-    }
+    },
+    activity:{
+       type:Boolean,
+       default: true
+    },
+    isVerified:{
+        type: Boolean,
+        default: false
+    },
+    otp:{
+        type: String
+    },
+    otpExpires: { type: Date },
+    date: {
+        type: Date,
+        default: Date.now
+    },
+      
 }, { timestamps: true });
 
 // Middleware to hash password before saving

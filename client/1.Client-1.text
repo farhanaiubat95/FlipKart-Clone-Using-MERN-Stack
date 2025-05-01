@@ -59,3 +59,13 @@
 
 19.install redux-persist
    -> npm i redux-persist
+
+20.install recharts
+   -> npm install recharts
+
+21.install lucide-react
+   -> npm install lucide-react
+
+22.Google Search - Axios Interceptors
+
+

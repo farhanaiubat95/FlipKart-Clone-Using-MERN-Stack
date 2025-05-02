@@ -1,0 +1,6 @@
+.carousel-item-padding-10-px {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px; /* Match the image height */
+  }

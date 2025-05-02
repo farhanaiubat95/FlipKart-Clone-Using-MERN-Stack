@@ -10,6 +10,8 @@ import productRouter from './routes/productsRoute.js';
 import paymentRouter from './routes/paymentRouter.js';
 import Authrouters from './routes/AuthRouter.js';
 import Adminrouter from './routes/AdminRouter.js';
+import Sellerrouter from './routes/SellerRouter.js';
+import Customerrouter from './routes/CustomerRouter.js';
 
 // Initialize express
 const app = express();
@@ -35,6 +37,9 @@ app.use(cors({
 // User Login & register
 app.use('/', Authrouters)
 app.use('/admin', Adminrouter)
+app.use('/seller', Sellerrouter)
+app.use('/customer', Customerrouter)
+
 app.use('/',productRouter);
 app.use('/',paymentRouter);
 

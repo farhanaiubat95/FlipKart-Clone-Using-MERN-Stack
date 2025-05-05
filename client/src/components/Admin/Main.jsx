@@ -126,7 +126,7 @@ const Main = () => {
                             <Bar dataKey="newUsers" name="New Users" fill="#3b82f6" />
                         </BarChart>
                     </ResponsiveContainer>
-                </div>
+                </div> 
 
 
                 {/* Chart-2 (Static for now) */}

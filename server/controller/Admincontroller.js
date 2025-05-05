@@ -1,39 +1,40 @@
 import userModel from "../model/userModel.js";
-
+import Category from "../model/CategoriesModel.js";
+import slugify from "slugify";
 
 // get all users
 export const Getuser = async (req, res) => {
-    try {
-        const customer = await userModel.find({ role: "customer" });
-        const admin = await userModel.find({ role: "admin" });
-        const seller = await userModel.find({ role: "seller" });
+  try {
+    const customer = await userModel.find({ role: "customer" });
+    const admin = await userModel.find({ role: "admin" });
+    const seller = await userModel.find({ role: "seller" });
 
-        // Count the number of users per role
-        const totalUser = await userModel.countDocuments({ role: { $in: ["customer", "admin", "seller"] } });
-        const totalCustomer = await userModel.countDocuments({ role: "customer" });
-        const totalAdmin = await userModel.countDocuments({ role: "admin" });
-        const totalSeller = await userModel.countDocuments({ role: "seller" });
+    const totalUser = await userModel.countDocuments({ role: { $in: ["customer", "admin", "seller"] } });
+    const totalCustomer = await userModel.countDocuments({ role: "customer" });
+    const totalAdmin = await userModel.countDocuments({ role: "admin" });
+    const totalSeller = await userModel.countDocuments({ role: "seller" });
 
-        res.status(200).json({
-            success: true,
-            counts: {
-                totalUser,
-                totalAdmin,
-                totalCustomer,  
-                totalSeller,
-            },
-            users: {
-                admin,
-                customer,
-                seller,
-            }     
-        });
+    res.status(200).json({
+      success: true,
+      counts: {
+        totalUser,
+        totalAdmin,
+        totalCustomer,
+        totalSeller,
+      },
+      users: {
+        admin,
+        customer,
+        seller,
+      }     
+    });
 
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ success: false, message: "Server error while fetching users." });
-    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Server error while fetching users." });
+  }
 }
+
 
 // Get user by ID
 export const GetUserById = async (req, res) => {
@@ -104,48 +105,62 @@ export const ToggleUserActivity = async (req, res) => {
 }
 
 
-// get user count per month
-// get user count per month separately for customer & seller
-export const GetUserStats = async (req, res) => {
-    try {
-        const stats = await userModel.aggregate([
-            {
-              $match: {
-                createdAt: { $exists: true },
-                role: { $in: ["customer", "seller"] }
-              }
-            },
-            {
-              $group: {
-                _id: {
-                  month: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
-                  role: "$role"
-                },
-                total: { $sum: 1 } // counts users created in that month
-              }
-            },
-            {
-              $sort: { "_id.month": 1 }
-            }
-          ]);
-          
-  
-      // Get total counts
-      const totalCustomer = await userModel.countDocuments({ role: "customer" });
-      const totalSeller = await userModel.countDocuments({ role: "seller" });
-      const totalUser = await userModel.countDocuments({ role: { $in: ["customer", "admin", "seller"] } });
-      res.status(200).json({
-        success: true,
-        stats,
-        totals: {
-          customer: totalCustomer,
-          seller: totalSeller,
-          totaluser: totalUser
-        }
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ success: false, message: "Server error while fetching user stats." });
+// create category
+function createCategories(categories, parentId = null) {
+    const categoryList = [];
+    let category;
+    if(parentId == null){
+      category = categories.filter((cat) => cat.parentId == undefined);
+    }else{
+      category = categories.filter((cat) => cat.parentId == parentId);
     }
-  };
-  
+    for (let cate of category) {
+      categoryList.push({
+        _id: cate._id,
+        categoryName: cate.categoryName,
+        slug: cate.slug,
+        parentId: cate.parentId,
+        children: createCategories(categories, cate._id),
+      });
+    }
+    return categoryList;
+}
+export const CreateCategory = async (req, res) => {
+    try {
+        const categoryObj = {
+          categoryName: req.body.categoryName,
+          categoryImage: req.body.categoryImage,
+          slug: slugify(req.body.categoryName),
+        }
+        if (req.body.parentId) {
+            categoryObj.parentId = req.body.parentId;
+        }
+
+        const category = await Category.create(categoryObj);
+        res.status(201).json({ success: true, message: "Category created successfully", category });
+
+       
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Category is not created successfully", error: error.message });
+        console.log(error);
+    }
+}
+
+// get all categories
+export const GetAllCategories = async (req, res) => {
+    try {
+        const categories = await Category.find({});
+
+        if(categories){
+          const totalCategories = await Category.countDocuments({});
+           const categoryList = createCategories(categories);
+           res.status(200).json({ success: true,totalCategories, message: "Categories fetched successfully", categoryList });
+          
+        }
+
+       
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Internal server error", error: error.message });
+        console.log(error);
+    }
+}

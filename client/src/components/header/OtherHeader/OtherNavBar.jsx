@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Box, Typography, IconButton, Drawer, List, ListItem, ListItemText } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import logo from '../../../assets/images/flipkart-logo.png';
 import plus from '../../../assets/images/plus.png';
 import { styled } from '@mui/material/styles';
@@ -176,6 +176,7 @@ const NavItem = [
   { label: 'Sports, Books, More', href: '/toys-games' }
 ]
 
+
 const OtherNavBar = () => {
   const user = useSelector((state) => state.Auth.user);
 
@@ -195,9 +196,17 @@ const OtherNavBar = () => {
 
   const isAdminOrSeller = user?.role === 'admin' || user?.role === 'seller';
 
+  const location = useLocation();
+  const isDashboardRoute = location.pathname.includes('/admin/dashboard') || location.pathname.includes('/seller/dashboard');;
+
+
   return (
     <>
-      <StyledHeader position="fixed" className="bg-[#2874f0] shadow-none">
+      <StyledHeader
+        position="fixed"
+        className="shadow-none"
+        sx={{ backgroundColor: isDashboardRoute ? '#06204b' : '#2874f0' }}
+      >
         <StyledToolbar className="w-[95%] max-w-[1300px] mx-auto px-4 min-h-[60px] flex justify-between items-center">
           {/* Menu Button for small screens */}
           <div className=" md:hidden flex items-center">
@@ -229,7 +238,7 @@ const OtherNavBar = () => {
                       <img src={logo} alt="logo" style={{ width: 75 }} />
                     </Link>
                   )
-              }
+                }
               </Box>
               <Box style={{ ml: '10px' }}>
                 <StyledTypography>

@@ -41,3 +41,5 @@ or  install mailtrap
     -> npm install mailtrap
    run for check : node .\server\mailtrap\mailtrap.config.js
 
+14.install slugify
+    -> npm i slugify

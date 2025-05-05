@@ -63,9 +63,14 @@
 20.install recharts
    -> npm install recharts
 
-21.install lucide-react
+21.install react-chartjs-2 chart.js
+   -> npm install react-chartjs-2 chart.js
+
+22.install lucide-react
    -> npm install lucide-react
 
-22.Google Search - Axios Interceptors
+23.Google Search - Axios Interceptors
+
+
 
 

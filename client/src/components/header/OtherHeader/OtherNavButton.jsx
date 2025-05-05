@@ -89,7 +89,6 @@ const StyledLink = styled(Button)(({ theme }) => ({
   border: 'none',
   borderRadius: 0,
   marginLeft: '40px',
-  marginRight: '40px',
   textDecoration: 'none',
 
   [theme.breakpoints.down('md')]: {
@@ -156,7 +155,7 @@ const StyleIcon = styled(Box)(({ theme }) => ({
   padding: '7px',
   borderRadius: '5px',
   transition: 'all 0.3s ease-in-out',
-  margin: '0  auto',
+  marginLeft: '20px',
   display: 'block',
   position: 'relative',
 
@@ -321,54 +320,56 @@ const OtherNavButton = () => {
         )}
       </StyledLoginButton>
 
-      {/* Cart Button (shown only if NOT admin/seller) */}
-      {(!userRole || userRole === "customer") && (
-        <StyledNavLink to={"/myaccount/cart"}>
-          <Box style={{ display: "flex", alignItems: "center" }}>
-            <ShoppingCart />
-            <Typography style={{ fontWeight: 500, marginLeft: 5 }}>&nbsp;Cart</Typography>
-          </Box>
-        </StyledNavLink>
-      )}
+      <Box style={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
+        {/* Cart Button (shown only if NOT admin/seller) */}
+        {(!userRole || userRole === "customer") && (
+          <StyledNavLink to={"/myaccount/cart"}>
+            <Box style={{ display: "flex", alignItems: "center" }}>
+              <ShoppingCart />
+              <Typography style={{ fontWeight: 500, marginLeft: 5 }}>&nbsp;Cart</Typography>
+            </Box>
+          </StyledNavLink>
+        )}
 
-      {/* Role-based buttons */}
-      {user && (
-        <>
-          {userRole === "admin" && (
-            <StyledNavLink to={"/admin/dashboard"}>
-              <Typography style={{ fontWeight: 500, fontSize: '16px' }}>Dashboard</Typography>
-            </StyledNavLink>
-          )}
+        {/* Role-based buttons */}
+        {user && (
+          <>
+            {userRole === "admin" && (
+              <StyledNavLink to={"/admin/dashboard"}>
+                <Typography style={{ fontWeight: 500, fontSize: '16px' }}>Dashboard</Typography>
+              </StyledNavLink>
+            )}
 
-          {userRole === "seller" && (
-            <StyledNavLink to={"/seller/dashboard"}>
-              <Typography style={{ fontWeight: 500, fontSize: '16px' }}>Become a Seller</Typography>
-            </StyledNavLink>
-          )}
-        </>
-      )}
+            {userRole === "seller" && (
+              <StyledNavLink to={"/seller/dashboard"}>
+                <Typography style={{ fontWeight: 500, fontSize: '16px' }}>Become a Seller</Typography>
+              </StyledNavLink>
+            )}
+          </>
+        )}
 
-      {/* Become a Seller (public/guest view) */}
-      {!user && (
-        <StyledNavLink to={"/seller/dashboard"}>
-          <Typography style={{ fontWeight: 500, fontSize: '16px' }}>Become a Seller</Typography>
-        </StyledNavLink>
-      )}
+        {/* Become a Seller (public/guest view) */}
+        {!user && (
+          <StyledNavLink to={"/seller/dashboard"}>
+            <Typography style={{ fontWeight: 500, fontSize: '16px' }}>Become a Seller</Typography>
+          </StyledNavLink>
+        )}
 
-      {/* More Menu */}
-      <StyleIcon>
-        <Typography style={{ display: 'flex', alignItems: 'center' }}>
-          <Typography>More</Typography>&nbsp;
-          <KeyboardArrowDownIcon className="arrow-icon" style={{ fontSize: 16 }} />
-        </Typography>
+        {/* More Menu */}
+        <StyleIcon>
+          <Typography style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography>More</Typography>&nbsp;
+            <KeyboardArrowDownIcon className="arrow-icon" style={{ fontSize: 16 }} />
+          </Typography>
 
-        <StyleIconBox className="icon-box">
-          <StyledIconText><NotificationsNoneIcon /><Typography>Notification Preferences</Typography></StyledIconText>
-          <StyledIconText><HeadsetMicIcon /><Typography>24x7 Customer Care</Typography></StyledIconText>
-          <StyledIconText><TrendingUpIcon /><Typography>Advertise</Typography></StyledIconText>
-          <StyledIconText><SystemUpdateAltIcon /><Typography>Download App</Typography></StyledIconText>
-        </StyleIconBox>
-      </StyleIcon>
+          <StyleIconBox className="icon-box">
+            <StyledIconText><NotificationsNoneIcon /><Typography>Notification Preferences</Typography></StyledIconText>
+            <StyledIconText><HeadsetMicIcon /><Typography>24x7 Customer Care</Typography></StyledIconText>
+            <StyledIconText><TrendingUpIcon /><Typography>Advertise</Typography></StyledIconText>
+            <StyledIconText><SystemUpdateAltIcon /><Typography>Download App</Typography></StyledIconText>
+          </StyleIconBox>
+        </StyleIcon>
+      </Box>
     </StyledBox>
   );
 };

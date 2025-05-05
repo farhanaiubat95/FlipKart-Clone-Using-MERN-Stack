@@ -29,6 +29,7 @@ import SellerDashboard from '../components/Seller/SellerDashboard.jsx';
 import CustomerHome from '../pages/CustomerHome.jsx';
 import Cart from '../components/Customer/Cart.jsx';
 import Edit from '../components/Admin/Edit.jsx';
+import MainSeller from '../components/Seller/MainSeller.jsx';
 
 const Routers = () => {
   return (
@@ -63,8 +64,8 @@ const Routers = () => {
         {/* Customer */}
         <Route element={<ProtectedRoute allowedRoles={['customer']} />}>
           <Route path="/myaccount" element={<CustomerLayout />} >
-            <Route index element={<CustomerHome />}/>
-              <Route path="cart" element={<Cart />} />
+            <Route index element={<CustomerHome />} />
+            <Route path="cart" element={<Cart />} />
 
           </Route>
         </Route>
@@ -87,8 +88,9 @@ const Routers = () => {
         {/* Seller */}
         <Route element={<ProtectedRoute allowedRoles={['seller']} />}>
           <Route path="/seller" element={<SellerLayout />}>
-            <Route path='dashboard' element={<SellerDashboard />} />
-
+            <Route path='dashboard' element={<SellerDashboard />} >
+              <Route index element={<MainSeller />} />
+            </Route>
           </Route>
         </Route>
 

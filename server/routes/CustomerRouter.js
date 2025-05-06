@@ -1,10 +1,10 @@
 import express from 'express';
-import { Getuser , DeleteUser} from '../controller/Admincontroller.js';
-import { isCustomer } from '../middleware/VerifyToken.js';
+import { AddToCart ,} from '../controller/CustomerController.js';
+import { requireSignin,isCustomer } from '../middleware/VerifyToken.js';
 
-const Customerrouter = express.Router();
+const CartRouter = express.Router();
 
-Customerrouter.get('/dashboard', isCustomer , Getuser)
-Customerrouter.post('/delete/:id', isCustomer , DeleteUser)
+CartRouter.post('/cart/addtocart',requireSignin, isCustomer, AddToCart);    
+// CartRouter.get('/cart/getcart',GetCart);
 
-export default Customerrouter;
+export default CartRouter;

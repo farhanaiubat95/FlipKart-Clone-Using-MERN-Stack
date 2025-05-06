@@ -1,4 +1,6 @@
 import userModel from "../model/userModel.js";
+import productModel from "../model/productModel.js";
+import categoriesModel from "../model/CategoriesModel.js";
 import jwt from "jsonwebtoken";
 import jwt_Token from "../dotenv/JWT_Token.js";
 import nodemailer from 'nodemailer';
@@ -68,7 +70,7 @@ export const Signup = async (req, res) => {
         });
 
         // JWT token
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRETE, { expiresIn: "2d" });
+        const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRETE, { expiresIn: "2d" });
         res.cookie('token', token, {
             httpOnly: true,
             secure: false,
@@ -203,3 +205,25 @@ export const UpdateUser = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// GetAllProducts
+export const GetAllProducts = async (req, res) => {
+    try {
+        const products = await productModel.find({});
+        res.status(200).json({success: true, message: "Products fetched successfully",products});
+    } catch (e) {
+        console.log("Error in getAllProducts", e.message);
+        res.status(500).json({ success: false, message: e.message });
+    }
+}
+
+// GetAllCategories
+export const GetAllCategories = async (req, res) => {
+    try {
+        const categories = await categoriesModel.find({});
+        res.status(200).json({success: true, message: "Categories fetched successfully",categories});
+    } catch (e) {
+        console.log("Error in getAllCategories", e.message);
+        res.status(500).json({ success: false, message: e.message });
+    }
+}

@@ -13,6 +13,7 @@ import {
     User,
     Layers,
 } from 'lucide-react';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -100,15 +101,32 @@ export default function Dashboard() {
                         </MuiMenu>
                     </>
 
-                    <button className="flex items-center gap-2 w-full p-2 hover:bg-gray-800 rounded cursor-pointer">
+                    {/* ✅ Add navigation to buttons */}
+                    <button
+                        onClick={() => navigate('/admin/dashboard/addcategory')}
+                        className="flex items-center gap-2 w-full p-2 hover:bg-gray-800 rounded cursor-pointer"
+                    >
+                        <AddCircleIcon /> Add Categories
+                    </button>
+
+                    <button
+                        onClick={() => navigate('/admin/dashboard/payment')}
+                        className="flex items-center gap-2 w-full p-2 hover:bg-gray-800 rounded cursor-pointer"
+                    >
                         <BarChart2 /> Payment
                     </button>
+
+                    <button
+                        onClick={() => navigate('/admin/dashboard/notification')}
+                        className="flex items-center gap-2 w-full p-2 hover:bg-gray-800 rounded cursor-pointer"
+                    >
+                        Notification
+                    </button>
+
                     <button className="flex items-center gap-2 w-full p-2 hover:bg-gray-800 rounded cursor-pointer">
                         <Layers /> Multi Level
                     </button>
-                    <button className="flex items-center gap-2 w-full p-2 hover:bg-gray-800 rounded cursor-pointer">
-                        Notification
-                    </button>
+
                     <button className="flex items-center gap-2 w-full p-2 hover:bg-gray-800 rounded cursor-pointer">
                         <Settings /> Setting
                     </button>

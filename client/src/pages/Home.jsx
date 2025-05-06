@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Box } from '@mui/material'
 import { styled } from '@mui/system'
-
+import { useDispatch } from 'react-redux';
+import { SetProducts } from '../redux/ProductSlice';
+import {get} from "../API/ApiEndPoints.js"
 // Importing components
 import HomeNav from '../components/home/HomeNav'
 import Banner from '../components/home/Banner'
+import { SetCategories } from '../redux/CategorySlice.js';
+import { SetOrders } from '../redux/OrderSlice.js';
 
 // Apply styles
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -47,6 +51,41 @@ const StyledBox2 = styled(Box)`
 
 
 const Home = () => {
+  const dispatch = useDispatch();
+
+  // fetch products-redux
+  const fetchProducts = () => {
+    get('http://localhost:5000/allproducts')
+      .then(res => {
+        dispatch(SetProducts(res.data.products));
+      })
+      .catch(error => console.error(error));
+  };
+
+  // fetch categories-redux
+  const fetchCategories = () => {  
+    get('http://localhost:5000/allcategories')
+      .then(res => {
+        dispatch(SetCategories(res.data.categories));
+      })
+      .catch(error => console.error(error));
+  };
+
+  // fetch orders
+  const fetchOrders = () => {  
+    get('http://localhost:5000/allorders')
+      .then(res => {
+        dispatch(SetOrders(res.data.orders));
+      })
+      .catch(error => console.error(error));
+  };
+
+  useEffect(() => {
+    fetchProducts();   
+    fetchCategories();
+    fetchOrders();  
+  }, []);
+
   return (
     // Fragment - > "<></>"
 

@@ -127,11 +127,19 @@ function createCategories(categories, parentId = null) {
 }
 export const CreateCategory = async (req, res) => {
     try {
+      let  categoryImage = [];
+
+      if(request.files.length>0){
+        categoryImage = request.files.map((file) => {
+              return { img: file.filename };
+            });
+      }
         const categoryObj = {
           categoryName: req.body.categoryName,
-          categoryImage: req.body.categoryImage,
+          categoryImage: categoryImage,
           slug: slugify(req.body.categoryName),
         }
+    
         if (req.body.parentId) {
             categoryObj.parentId = req.body.parentId;
         }

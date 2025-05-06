@@ -1,37 +1,86 @@
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
-    id:{
-        type:String,
-        unique:true,
-        required:true
+    productName: {
+        type: String,
+        required: true,
+        trim: true,
     },
-    url:String,
-    detailUrl:String,
-    title:{
-        type:Object,
-        required:true
+    productTitle:{
+        type: String,
+        required: true,
+        trim: true,
+    },    
+    brand: {
+        type: String,
+        trim: true,
     },
-    price:{
-        type:Object,
-        required:true
+      
+    slug:{
+        type: String,
+        required: true,
+        unique: true,
     },
-    quantity:{
-        type:Number,
-        required:true
+    productImage:[
+        {
+            img:{
+                type: String,
+            }
+        }
+    ],
+    productPrice: {
+        type: Number,
+        // required: true,
+        min: 0
     },
-    description:{
-        type:String
+    productOffer: {
+        type: Number,
+        min: 0,
+        max: 100
     },
-    discount:{
-        type:String,
+    productDiscount: {
+        type: Number,
     },
-    tagline:{
-        type:String,
-        
-    }
+      
+    productDescription: {
+        type: String,
+        // required: true,
+        trim: true,
+    },
+    productCategory: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+    },
+    productQuantity: {
+        type: Number,
+        // required: true,
+    },
+    inStock: {
+        type: Boolean,
+        default: true,
+    },
+    productReviews: [
+        {
+          userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Users',
+          },
+          reviews: String,
+        },
+    ],
+    productRatings: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Users',
+    },
+      
 
-});
+}, { timestamps: true });
 
-const productModel = mongoose.model('products',productSchema);
-export default productModel;
+
+export default mongoose.model("Productcollection", productSchema);

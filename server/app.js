@@ -6,7 +6,6 @@ import cookieParser from 'cookie-parser';
 
 // import routes
 // import UserRouter from './routes/userRoute.js';
-import productRouter from './routes/productsRoute.js';
 import paymentRouter from './routes/paymentRouter.js';
 import Authrouters from './routes/AuthRouter.js';
 import Adminrouter from './routes/AdminRouter.js';
@@ -40,7 +39,6 @@ app.use('/admin', Adminrouter)
 app.use('/seller', Sellerrouter)
 app.use('/customer', Customerrouter)
 
-app.use('/',productRouter);
 app.use('/',paymentRouter);
 
 export default app;

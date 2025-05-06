@@ -45,6 +45,10 @@ const userSchema = new mongoose.Schema({
         default: 'customer',
         required: true
     },
+    sellerShop:{
+        type: String,
+        default: 'No-shop',
+    },
     password: {
         type: String,
         required: true

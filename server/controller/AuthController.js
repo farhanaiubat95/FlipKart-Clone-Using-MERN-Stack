@@ -1,7 +1,6 @@
 import userModel from "../model/userModel.js";
 import jwt from "jsonwebtoken";
 import jwt_Token from "../dotenv/JWT_Token.js";
-// import { MailtrapClient } from 'mailtrap';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -9,7 +8,7 @@ dotenv.config();
 // register 
 export const Signup = async (req, res) => {
     try {
-        const { firstname, lastname, username, email, phone, address, role, activity, password } = req.body;
+        const { firstname, lastname, username, email, phone, address, role, sellerShop, password } = req.body;
 
         const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -26,10 +25,10 @@ export const Signup = async (req, res) => {
             return res.status(400).json({ success: false, message: "Password must be at least 8 characters" });
         }
         if (phone.toString().length < 11 || phone.toString().length > 15) {
-            return res.status(400).json({ success: false, message: "Phone number must be at least 11 digits" });
+            return res.status(400).json({ success: false, message: "Phone number must be 11-15 digits" });
         }
 
-        // Create new user
+        // Create user object
         const user = new userModel({
             firstname,
             lastname,
@@ -38,17 +37,16 @@ export const Signup = async (req, res) => {
             phone,
             address,
             role,
+            sellerShop: role === 'seller' ? sellerShop : 'No-shop', // only set shop if role is seller
             password,
-            activity,
             otp: verifyCode,
             otpExpires: Date.now() + 10 * 60 * 1000,
         });
 
         await user.save();
 
-        // Setup Nodemailer transporter with Mailtrap SMTP
+        // Nodemailer
         const transporter = nodemailer.createTransport({
-            // host: "sandbox.smtp.mailtrap.io",
             service: "gmail",
             port: 465,
             secure: true,
@@ -57,14 +55,14 @@ export const Signup = async (req, res) => {
                 pass: process.env.MAILTRAP_PASS,
             },
             tls: {
-                rejectUnauthorized: false, // Allow self-signed certificates
+                rejectUnauthorized: false,
             }
-          });
+        });
 
         // Send OTP email
         await transporter.sendMail({
-            from: process.env.MAILTRAP_USER , // sender
-            to: email, // receiver
+            from: process.env.MAILTRAP_USER,
+            to: email,
             subject: "Your OTP Code",
             text: `Hello ${firstname}, your OTP code is: ${verifyCode}`
         });
@@ -75,7 +73,7 @@ export const Signup = async (req, res) => {
             httpOnly: true,
             secure: false,
             sameSite: 'lax',
-            maxAge: 1000 * 60 * 60 * 48, // 2 days
+            maxAge: 1000 * 60 * 60 * 48,
         });
 
         return res.status(201).json({
@@ -93,7 +91,6 @@ export const Signup = async (req, res) => {
         console.log(error);
     }
 };
-
 
 export const VerifyEmail = async (req, res) => {
     try {
@@ -123,53 +120,86 @@ export const VerifyEmail = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
         console.log(error);
     }
-}
-
+}  
 
 // login
 export const Login = async (req, res) => {
-    try{
+    try {
         const { username, password } = req.body;
         const user = await userModel.findOne({ username: username });
 
         if (!user) {
-            return res.status(400).json({success: false, message: "User not found" });
+            return res.status(400).json({ success: false, message: "User not found" });
         }
         if (!user.isVerified) {
-            return res.status(400).json({success: false, message: "Please verify your email" });
+            return res.status(400).json({ success: false, message: "Please verify your email" });
         }
         if (!user.activity) {
-            return res.status(400).json({success: false, message: "Your account is inactive" });
+            return res.status(400).json({ success: false, message: "Your account is inactive" });
         }
 
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
-            return res.status(400).json({success: false, message: "Given password is incorrect" });
+            return res.status(400).json({ success: false, message: "Given password is incorrect" });
         }
 
-        // create token, after login successfully
-        const token = jwt.sign({userId: user._id}, jwt_Token);
+        // create token
+        const token = jwt.sign({ userId: user._id }, jwt_Token);
         res.cookie('token', token, {
             httpOnly: true,
             secure: false,
             sameSite: 'lax',
-            maxAge: 1000 * 60 * 60 * 24, // 1 day
-        });        
-        
-        return res.status(200).json({success: true, user, message: "User logged in successfully" , token});
-    }catch(error){
-        res.status(500).json({success: false, message: error.message});
+            maxAge: 1000 * 60 * 60 * 24,
+        });
+
+        return res.status(200).json({ success: true, user, message: "User logged in successfully", token });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
         console.log(error);
     }
-}
-        
+};
+
+
 // logout
 export const Logout = async (req, res) => {
-    try{
+    try {
         res.clearCookie('token');
-        return res.status(200).json({success: true, message: "User logged out successfully" });
-    }catch(error){
-        res.status(500).json({success: false, message: error.message});
+        return res.status(200).json({ success: true, message: "User logged out successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
         console.log(error);
     }
-}
+};
+
+
+// update user
+export const UpdateUser = async (req, res) => {
+    try {
+        const { firstname, lastname, username, email, phone, address, sellerShop } = req.body;
+
+        const user = await userModel.findByIdAndUpdate(
+            req.params.id,
+            {
+                firstname,
+                lastname,
+                username,
+                email,
+                phone,
+                address,
+                sellerShop,
+                updatedAt: Date.now()
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        } else {
+            return res.status(200).json({ success: true, message: "User updated successfully", user });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

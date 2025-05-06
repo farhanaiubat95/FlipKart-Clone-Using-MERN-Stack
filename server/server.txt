@@ -43,3 +43,9 @@ or  install mailtrap
 
 14.install slugify
     -> npm i slugify
+
+15.install multer
+    -> npm i multer
+
+16.install nanoid
+    -> npm i nanoid

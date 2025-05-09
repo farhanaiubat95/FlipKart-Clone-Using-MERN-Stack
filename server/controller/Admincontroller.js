@@ -1,6 +1,7 @@
 import userModel from "../model/userModel.js";
 import Category from "../model/CategoriesModel.js";
 import slugify from "slugify";
+import { nanoid } from "nanoid";
 
 // get all users
 export const Getuser = async (req, res) => {
@@ -126,33 +127,40 @@ function createCategories(categories, parentId = null) {
     return categoryList;
 }
 export const CreateCategory = async (req, res) => {
-    try {
-      let  categoryImage = [];
-
-      if(request.files.length>0){
-        categoryImage = request.files.map((file) => {
-              return { img: file.filename };
-            });
-      }
-        const categoryObj = {
-          categoryName: req.body.categoryName,
-          categoryImage: categoryImage,
-          slug: slugify(req.body.categoryName),
-        }
-    
-        if (req.body.parentId) {
-            categoryObj.parentId = req.body.parentId;
-        }
-
-        const category = await Category.create(categoryObj);
-        res.status(201).json({ success: true, message: "Category created successfully", category });
-
-       
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Category is not created successfully", error: error.message });
-        console.log(error);
+  try {
+    // Check if a file is uploaded
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "Please upload a file" });
     }
-}
+  
+    const categoryImage = `${req.file.filename}`; // Store the path to the uploaded image
+  
+    const categoryObj = {
+      categoryName: req.body.categoryName,
+      categoryImage: categoryImage, 
+      slug: slugify(req.body.categoryName), 
+    };
+  
+    if (req.body.parentId) {
+      categoryObj.parentId = req.body.parentId; // Optional parent category
+    }
+  
+    const category = await Category.create(categoryObj);
+  
+    res.status(201).json({ 
+      success: true, 
+      message: "Category created successfully", 
+      category 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: "Category is not created successfully", 
+      error: error.message 
+    });
+    console.error(error);
+  }
+};  
 
 // get all categories
 export const GetAllCategories = async (req, res) => {
@@ -163,9 +171,7 @@ export const GetAllCategories = async (req, res) => {
           const totalCategories = await Category.countDocuments({});
            const categoryList = createCategories(categories);
            res.status(200).json({ success: true,totalCategories, message: "Categories fetched successfully", categoryList });
-          
         }
-
        
     } catch (error) {
         res.status(500).json({ success: false, message: "Internal server error", error: error.message });

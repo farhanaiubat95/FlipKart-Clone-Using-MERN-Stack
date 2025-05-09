@@ -4,23 +4,21 @@ import { styled } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
 
 // API
-import { post } from "../../../API/ApiEndPoints"
+import { post } from "../../../API/ApiEndPoints";
 
 // Redux
 import { Logout } from "../../../redux/AuthSlice";
-
-// Apply Icons
-import ShoppingCart from "@mui/icons-material/ShoppingCart";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
+import { useDispatch, useSelector } from "react-redux";
 
 // Icons
+import ShoppingCart from "@mui/icons-material/ShoppingCart";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
-import { useDispatch, useSelector } from "react-redux";
 
-// Apply styles
+// Styled components
 const StyledBox = styled(Box)(({ theme }) => ({
   margin: '0 3% 0 auto',
   lineHeight: 0,
@@ -59,21 +57,21 @@ const StyledBox = styled(Box)(({ theme }) => ({
       color: 'black',
     },
 
-    '& > p:nth-child(2)': {
-      display: 'none',
-    },
+    // '& > p:nth-of-type(2)': {
+    //   display: 'none',
+    // },
 
-    '& > div:nth-child(3)': {
-      display: 'none',
-    },
+    // '& > div:nth-of-type(3)': {
+    //   display: 'none',
+    // },
 
     '& .dropdown-menu': {
-      display: 'none', // Hide the dropdown menu on smaller screens
+      display: 'none',
     },
   },
 
   '& .hidden': {
-    display: 'none', // Utility class to hide items dynamically
+    display: 'none',
   },
 }));
 
@@ -101,13 +99,11 @@ const StyledLink = styled(Button)(({ theme }) => ({
     fontWeight: 'bold',
     boxShadow: 'none',
     textAlign: 'center',
-    textDecoration: 'none',
 
     '&:hover': {
       background: 'rgba(191, 193, 198, 0.32)',
       boxShadow: 'none',
       border: 'none',
-      textDecoration: 'none',
     },
   },
 }));
@@ -129,13 +125,9 @@ const StyledNavLink = styled(Link)(({ theme }) => ({
   textDecoration: 'none',
 
   [theme.breakpoints.down('md')]: {
-    margin: '0 auto',
     width: '100%',
     marginBottom: '15px',
     borderRadius: '5px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: '10px 0',
 
     '&:hover': {
@@ -169,10 +161,8 @@ const StyleIcon = styled(Box)(({ theme }) => ({
   },
 
   [theme.breakpoints.down('md')]: {
-    margin: '0 auto',
     width: '100%',
     marginBottom: '15px',
-    borderRadius: '5px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -193,8 +183,7 @@ const StyleIconBox = styled(Box)(({ theme }) => ({
   width: '240px',
   borderRadius: '6px',
   border: '1px solid white',
-  boxShadow:
-    '0 4px 8px 0 rgba(127, 123, 123, 0.2), 0 6px 20px 0 rgba(121, 115, 115, 0.19)',
+  boxShadow: '0 4px 8px rgba(127, 123, 123, 0.2), 0 6px 20px rgba(121, 115, 115, 0.19)',
   position: 'absolute',
   top: '38px',
   right: 0,
@@ -222,7 +211,7 @@ const StyledIconText = styled(Link)(({ theme }) => ({
     marginRight: '16px',
   },
 
-  '& > p': {
+  '& > ': {
     fontSize: '15px',
     fontWeight: 500,
     color: '#4c4848',
@@ -233,15 +222,11 @@ const StyledLoginButton = styled(Box)(({ theme }) => ({
   position: 'relative',
 
   '& .dropdown-menu': {
-    display: 'none', // Make dropdown invisible by default
+    display: 'none',
   },
 
   '&:hover .dropdown-menu': {
-    display: 'flex', // Show on hover
-  },
-
-  [theme.breakpoints.down('md')]: {
-    // Additional adjustments for mobile screens if needed
+    display: 'flex',
   },
 }));
 
@@ -299,7 +284,6 @@ const OtherNavButton = () => {
 
   return (
     <StyledBox>
-      {/* Login or Profile */}
       <StyledLoginButton>
         {user ? (
           <StyledLink>
@@ -311,17 +295,15 @@ const OtherNavButton = () => {
           </StyledLink>
         )}
 
-        {/* Dropdown for logged-in user */}
         {user && (
           <DropdownMenu className="dropdown-menu">
             <Link to="/profile">Profile</Link>
-            <div><button onClick={handleLogout} className='cursor-pointer'>Logout</button></div>
+            <div><button onClick={handleLogout} className="cursor-pointer">Logout</button></div>
           </DropdownMenu>
         )}
       </StyledLoginButton>
 
       <Box style={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
-        {/* Cart Button (shown only if NOT admin/seller) */}
         {(!userRole || userRole === "customer") && (
           <StyledNavLink to={"/myaccount/cart"}>
             <Box style={{ display: "flex", alignItems: "center" }}>
@@ -331,31 +313,28 @@ const OtherNavButton = () => {
           </StyledNavLink>
         )}
 
-        {/* Role-based buttons */}
         {user && (
           <>
             {userRole === "admin" && (
               <StyledNavLink to={"/admin/dashboard"}>
-                <Typography style={{ fontWeight: 500, fontSize: '16px' }}>Dashboard</Typography>
+                <Typography style={{ fontWeight: 500 }}>Dashboard</Typography>
               </StyledNavLink>
             )}
 
             {userRole === "seller" && (
               <StyledNavLink to={"/seller/dashboard"}>
-                <Typography style={{ fontWeight: 500, fontSize: '16px' }}>Become a Seller</Typography>
+                <Typography style={{ fontWeight: 500 }}>Become a Seller</Typography>
               </StyledNavLink>
             )}
           </>
         )}
 
-        {/* Become a Seller (public/guest view) */}
         {!user && (
           <StyledNavLink to={"/seller/dashboard"}>
-            <Typography style={{ fontWeight: 500, fontSize: '16px' }}>Become a Seller</Typography>
+            <Typography style={{ fontWeight: 500 }}>Become a Seller</Typography>
           </StyledNavLink>
         )}
 
-        {/* More Menu */}
         <StyleIcon>
           <Typography style={{ display: 'flex', alignItems: 'center' }}>
             <Typography>More</Typography>&nbsp;
@@ -373,6 +352,5 @@ const OtherNavButton = () => {
     </StyledBox>
   );
 };
-
 
 export default OtherNavButton;

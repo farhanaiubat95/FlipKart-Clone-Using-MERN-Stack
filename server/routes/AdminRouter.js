@@ -1,12 +1,14 @@
 import express from 'express';
 import { Getuser , DeleteUser, ToggleUserActivity, GetUserById,UpdateUser, CreateCategory,GetAllCategories} from '../controller/Admincontroller.js';
 import { isAdmin } from '../middleware/VerifyToken.js';
-import { nanoid } from 'nanoid';
 import multer from 'multer';
 import path from 'path';
+import { nanoid } from 'nanoid';
 const Adminrouter = express.Router();
 
+// Configure multer to handle file uploads
 const __dirname = path.resolve();
+const Sellerrouter = express.Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -19,6 +21,8 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+// Add Categories
+Adminrouter.post('/dashboard/createproduct',isAdmin,upload.single('categoryImage'),CreateCategory);
 
 
 Adminrouter.get('/dashboard/getuser', isAdmin , Getuser)
@@ -27,7 +31,6 @@ Adminrouter.post('/dashboard/updateuser/:id', isAdmin, UpdateUser);
 Adminrouter.post('/dashboard/delete/:id', isAdmin , DeleteUser)
 Adminrouter.post('/dashboard/toggle-activity/:id', isAdmin, ToggleUserActivity)
 
-Adminrouter.post('/dashboard/create-category', isAdmin,upload.single('categoryImage'), CreateCategory)
 Adminrouter.get('/dashboard/getcategories', isAdmin, GetAllCategories)
 
 export default Adminrouter;

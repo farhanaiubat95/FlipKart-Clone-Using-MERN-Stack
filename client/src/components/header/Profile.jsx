@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { put } from '../../API/ApiEndPoints';
-import { SetUser } from '../../redux/AuthSlice'; // ✅ Correct import
-import { toast } from 'react-hot-toast'; // ✅ Make sure toast is imported
+import { SetUser } from '../../redux/AuthSlice'; 
+import { toast } from 'react-hot-toast';
 
 const Profile = () => {
   const user = useSelector((state) => state.Auth.user);

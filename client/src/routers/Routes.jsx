@@ -30,7 +30,7 @@ import CustomerHome from '../pages/CustomerHome.jsx';
 import Cart from '../components/Customer/Cart.jsx';
 import Edit from '../components/Admin/Edit.jsx';
 import MainSeller from '../components/Seller/MainSeller.jsx';
-import Addcategory from '../components/Admin/Addcategory.jsx';
+import Category from '../components/Admin/Category.jsx';
 import Payment from '../components/Admin/Payment.jsx';
 import Notification from '../components/Admin/Notification.jsx';
 
@@ -83,7 +83,7 @@ const Routers = () => {
               <Route path="allcustomer" element={<AllCustomer />} />
               <Route path="allseller" element={<AllSeller />} />
               <Route path="edit-admin/:id" element={<Edit />} />
-              <Route path="addcategory" element={<Addcategory />} />
+              <Route path="category" element={<Category />} />
               <Route path="payment" element={<Payment />} />
               <Route path="notification" element={<Notification />} />
             </Route>

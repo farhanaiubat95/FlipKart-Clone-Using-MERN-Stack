@@ -101,9 +101,9 @@ export default function Dashboard() {
                         </MuiMenu>
                     </>
 
-                    {/* ✅ Add navigation to buttons */}
+                    {/* Add navigation to buttons */}
                     <button
-                        onClick={() => navigate('/admin/dashboard/addcategory')}
+                        onClick={() => navigate('/admin/dashboard/category')}
                         className="flex items-center gap-2 w-full p-2 hover:bg-gray-800 rounded cursor-pointer"
                     >
                         <AddCircleIcon /> Add Categories

@@ -63,7 +63,7 @@ const Home = () => {
   };
 
   // fetch categories-redux
-  const fetchCategories = () => {  
+  const fetchCategories = () => {
     get('http://localhost:5000/allcategories')
       .then(res => {
         dispatch(SetCategories(res.data.categories));

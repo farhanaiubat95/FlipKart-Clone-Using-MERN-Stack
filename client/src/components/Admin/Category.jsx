@@ -1,100 +1,208 @@
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
 import {
-  Typography,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Avatar,
-  Box,
   TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  Box,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@mui/material";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { AddCategory } from "../../redux/CategorySlice";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
+import IconButton from "@mui/material/IconButton";
+import toast from "react-hot-toast";
+import { SetCategories } from "../../redux/CategorySlice";
 
-import InputAdornment from '@mui/material/InputAdornment';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-const CategoryTable = () => {
+const Category = () => {
   const dispatch = useDispatch();
-  const categories = useSelector((state) => state.Category.categories);
+  const categories = useSelector((state) => state.Category?.categories) || [];
+  const [categoryName, setCategoryName] = useState("");
+  const [parentId, setParentId] = useState("");
+  const [categoryImage, setCategoryImage] = useState(null);
   const [openRows, setOpenRows] = useState({});
+  const [editMode, setEditMode] = useState(false);
+  const [editCategoryData, setEditCategoryData] = useState(null);
 
-  // Filter main categories (those without a parentId)
+  const createCategoryList = (categories, options = [], depth = 0) => {
+    for (let category of categories) {
+      options.push({ value: category._id, label: category.categoryName });
+      if (category.children && category.children.length > 0) {
+        createCategoryList(category.children, options);
+      }
+    }
+    return options;
+  };
+
+  const handleFileChange = (e) => {
+    setCategoryImage(e.target.files[0]);
+  };
+
+  const fetchCategories = () => {
+    axios
+      .get("http://localhost:5000/allcategories")
+      .then((res) => {
+        dispatch(SetCategories(res.data.categories));
+      })
+      .catch((error) => console.error(error));
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, [dispatch]);
+
+  const handleSubmit = async () => {
+    if (!categoryName || !categoryImage) {
+      return alert("Please fill all fields");
+    }
+    try {
+      const formData = new FormData();
+      formData.append("categoryName", categoryName);
+      formData.append("parentId", parentId);
+      formData.append("categoryImage", categoryImage);
+
+      const res = await axios.post(
+        "http://localhost:5000/admin/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (res.data.success) {
+        toast.success("Category created successfully");
+        setCategoryName("");
+        setParentId("");
+        setCategoryImage(null);
+        fetchCategories();
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!categoryName) {
+      return alert("Please fill category name");
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("categoryName", categoryName);
+
+      if (parentId) {
+        formData.append("parentId", parentId);
+      } else {
+        formData.append("parentId", "");
+      }
+
+      if (categoryImage) {
+        formData.append("categoryImage", categoryImage);
+      }
+
+      const res = await axios.put(
+        `http://localhost:5000/admin/updatecategory/${editCategoryData._id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (res.data.success) {
+        toast.success("Category updated successfully");
+
+        // Immediately update Redux categories
+        dispatch(
+          SetCategories(
+            categories.map((cat) =>
+              cat._id === res.data.category._id ? res.data.category : cat
+            )
+          )
+        );
+
+        // Reset form states
+        setEditMode(false);
+        setEditCategoryData(null);
+        setCategoryName("");
+        setParentId("");
+        setCategoryImage(null);
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to update category");
+    }
+  };
+
+  const handleEditClick = (category) => {
+    setEditMode(true);
+    setEditCategoryData(category);
+    setCategoryName(category.categoryName);
+    setParentId(category.parentId || "");
+    setCategoryImage(null);
+  };
+
   const mainCategories = categories.filter((cat) => !cat.parentId);
 
-  // Get subcategories for a given parentId
   const getSubcategories = (parentId) =>
     categories.filter((cat) => cat.parentId === parentId);
 
-  // Toggle the open state of a category row
   const handleToggle = (id) => {
     setOpenRows((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const [formData, setFormData] = useState({
-    categoryName: "",
-    categoryImage: "",
-    categoryType: "main", // 'main' or 'sub'
-    parentId: "",
-  });
-
-  // Handle input changes for form fields
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Handle image upload and preview
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // In real app, you'd upload and get URL
-      setFormData((prev) => ({
-        ...prev,
-        categoryImage: URL.createObjectURL(file),
-      }));
+  const handleDelete = async (categoryId) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      try {
+        const res = await axios.delete(`http://localhost:5000/admin/deletecategory/${categoryId}`);
+        if (res.data.success) {
+          toast.success("Category deleted successfully");
+          // Update Redux state
+          dispatch(
+            SetCategories(categories.filter((cat) => cat._id !== categoryId))
+          );
+          fetchCategories();  // Refresh the categories list
+        } else {
+          toast.error(res.data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete category");
+      }
     }
   };
 
-  // Handle form submission for adding a new category
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const levelColors = [
+    "#ffffff",
+    "#e1f5fe",
+    "#fbe9e7",
+    "#e8eaf6",
+    "#e0f7fa",
+    "#e8f5e9",
+    "#fff3e0",
+    "#ede7f6",
+    "#fce4ec",
+  ];
 
-    const { categoryName, categoryImage, categoryType, parentId } = formData;
-    if (!categoryName || !categoryImage) {
-      return alert("Please fill all fields");
-    }
-
-    const newCategory = {
-      _id: Date.now().toString(), // Temporary ID for demo purposes
-      categoryName,
-      categoryImage,
-      parentId: categoryType === "sub" ? parentId : null,
-    };
-
-    dispatch(AddCategory(newCategory));
-
-    // Reset form data after submission
-    setFormData({
-      categoryName: "",
-      categoryImage: "",
-      categoryType: "main",
-      parentId: "",
-    });
-  };
-
-  // Render a table row for a category, including its subcategories if any
-  const renderCategoryRow = (cat, isSub = false) => {
+  const renderCategoryRow = (cat, level = 0) => {
     const subcategories = getSubcategories(cat._id);
     const hasSubs = subcategories.length > 0;
 
@@ -102,6 +210,7 @@ const CategoryTable = () => {
       <React.Fragment key={cat._id}>
         <TableRow
           sx={{
+            backgroundColor: levelColors[level % levelColors.length],
             transition: "all 0.3s ease",
             "&:hover": {
               backgroundColor: "#2462751a",
@@ -109,152 +218,225 @@ const CategoryTable = () => {
               transition: "all 0.3s ease",
             },
           }}
-          className={isSub ? "bg-gray-100" : ""}
         >
           <TableCell>
-            {hasSubs && !isSub && (
+            {hasSubs && (
               <IconButton size="small" onClick={() => handleToggle(cat._id)}>
-                {openRows[cat._id] ? (
-                  <KeyboardArrowUp />
-                ) : (
-                  <KeyboardArrowDown />
-                )}
+                {openRows[cat._id] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
               </IconButton>
             )}
           </TableCell>
+
           <TableCell>
-            <div className={`flex items-center ${isSub ? "pl-8" : ""}`}>
-              <Typography fontWeight={500}>{cat.categoryName}</Typography>
+            <Typography fontWeight={500} sx={{ paddingLeft: `${level * 20}px` }}>
+              {cat.categoryName}
+            </Typography>
+          </TableCell>
+
+          <TableCell>
+            <div>
+              <img
+                src={cat.categoryImage}
+                className={"w-[50px] h-[50px] rounded-full"}
+                alt=""
+              />
             </div>
           </TableCell>
-          <TableCell>
-            <Avatar
-              variant="rounded"
-              src={cat.categoryImage}
-              alt={cat.categoryName}
-              sx={{ width: 56, height: 40 }}
-            />
-          </TableCell>
+
           <TableCell>
             <div className="flex gap-2">
-              <Button size="small" variant="contained">
+              <Button
+                size="small"
+                variant="contained"
+                onClick={() => handleEditClick(cat)}
+              >
                 Edit
               </Button>
-              <Button size="small" variant="contained" color="error">
+              <Button
+                size="small"
+                variant="contained"
+                color="error"
+                onClick={() => handleDelete(cat._id)}  // Trigger delete
+              >
                 Delete
               </Button>
-              {!isSub && (
-                <Button size="small" variant="contained" color="success">
-                  Add Sub
-                </Button>
-              )}
             </div>
           </TableCell>
         </TableRow>
 
-        {/* Subcategory Rows */}
         {hasSubs &&
           openRows[cat._id] &&
-          subcategories.map((sub) => renderCategoryRow(sub, true))}
+          subcategories.map((sub) => renderCategoryRow(sub, level + 1))}
       </React.Fragment>
     );
   };
 
   return (
-    <Box className="p-6 flex lg:flex-row flex-col">
-      <div className="w-[100%] lg:w-[50%]">
-        <Paper className="p-6 my-6 shadow-md">
-          <Typography variant="h6" className="mb-4">
-            Add Category
-          </Typography>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <TextField
-              fullWidth
-              label="Category Name"
-              name="categoryName"
-              value={formData.categoryName}
-              onChange={handleChange}
-            />
+    <Box>
+      <Box className="flex justify-end p-3 bg-[#28325682]">
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: "#246275" }}
+          onClick={() => {
+            setEditMode(false);
+            setEditCategoryData(null);
+            setCategoryName("");
+            setParentId("");
+            setCategoryImage(null);
+          }}
+        >
+          Add New Category
+        </Button>
+      </Box>
 
-            <TextField
-              type="file"
-              onChange={handleImageUpload}
-              label="Choose Category Image"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AddPhotoAlternateIcon />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              variant="outlined"
-              sx={{
-                margin: "15px 0",
-                width: "100%",
-              }}
-            />
-
-            <FormControl fullWidth sx={{
-              marginBottom: "15px"
-            }}>
-              <InputLabel>Category Type</InputLabel>
-              <Select
-                name="categoryType"
-                value={formData.categoryType}
-                label="Category Type"
-                onChange={handleChange}
-              >
-                <MenuItem value="main">Main Category</MenuItem>
-                <MenuItem value="sub">Sub Category</MenuItem>
-              </Select>
-            </FormControl>
-
-            {formData.categoryType === "sub" && (
-              <FormControl fullWidth>
-                <InputLabel>Parent Category</InputLabel>
-                <Select
-                  name="parentId"
-                  value={formData.parentId}
-                  label="Parent Category"
-                  onChange={handleChange}
+      <Box className="flex justify-between xl:flex-row flex-col items-start p-6 gap-6">
+        {/* Conditionally show add or edit form */}
+        {!editMode ? (
+          <Box className="form-box w-full xl:w-[40%] rounded-5xl border shadow-lg">
+            <Card>
+              <CardContent className="space-y-6 p-6">
+                <Typography
+                  sx={{
+                    color: "#246275",
+                    fontWeight: "bold",
+                    fontSize: "1.5rem",
+                  }}
+                  className="text-2xl font-bold text-center py-5"
                 >
-                  {mainCategories.map((cat) => (
-                    <MenuItem key={cat._id} value={cat._id}>
-                      {cat.categoryName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
+                  Add New Category
+                </Typography>
 
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-              Submit
-            </Button>
-          </form>
-        </Paper>
-      </div>
+                <TextField
+                  sx={{ mb: 2 }}
+                  label="Category Name"
+                  variant="outlined"
+                  fullWidth
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
+                />
 
-      <div  className="w-[100%] lg:w-[50%]">
-        <TableContainer component={Paper} className=" w-[50%] lg:w-[100%] shadow-md">
-          <Table>
-            <TableHead>
-              <TableRow className="bg-gray-200">
-                <TableCell />
-                <TableCell>Category Name</TableCell>
-                <TableCell>Image</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {mainCategories.map((cat) => renderCategoryRow(cat))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <InputLabel id="parent-category-label">Parent Category</InputLabel>
+                  <Select
+                    labelId="parent-category-label"
+                    value={parentId}
+                    label="Parent Category"
+                    onChange={(e) => setParentId(e.target.value)}
+                  >
+                    {createCategoryList(categories).map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  fullWidth
+                  type="file"
+                  onChange={handleFileChange}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                   file:rounded-full file:border-0 file:text-sm file:font-semibold
+                   file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+
+                <Button
+                  onClick={handleSubmit}
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  className="!mt-4"
+                  sx={{ backgroundColor: "#246275", padding: "10px" }}
+                >
+                  SUBMIT
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+        ) : (
+          <Box className="edit-box w-full xl:w-[40%] rounded-5xl border shadow-lg">
+            <Card>
+              <CardContent className="space-y-6 p-6">
+                <Typography
+                  sx={{
+                    color: "#246275",
+                    fontWeight: "bold",
+                    fontSize: "1.5rem",
+                  }}
+                  className="text-2xl font-bold text-center py-5"
+                >
+                  Edit Category
+                </Typography>
+
+                <TextField
+                  sx={{ mb: 2 }}
+                  label="Category Name"
+                  variant="outlined"
+                  fullWidth
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
+                />
+
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <InputLabel id="parent-category-label">Parent Category</InputLabel>
+                  <Select
+                    labelId="parent-category-label"
+                    value={parentId}
+                    label="Parent Category"
+                    onChange={(e) => setParentId(e.target.value)}
+                  >
+                    {createCategoryList(categories).map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  fullWidth
+                  type="file"
+                  onChange={handleFileChange}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                   file:rounded-full file:border-0 file:text-sm file:font-semibold
+                   file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+
+                <Button
+                  onClick={handleUpdate}
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  className="!mt-4"
+                  sx={{ backgroundColor: "#246275", padding: "10px" }}
+                >
+                  UPDATE
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+        )}
+
+        <Box className="table-box w-full xl:w-[60%]">
+          <TableContainer sx={{ maxHeight: 500 }}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Expand</TableCell>
+                  <TableCell>Category Name</TableCell>
+                  <TableCell>Category Image</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {mainCategories.map((cat) => renderCategoryRow(cat))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Box>
     </Box>
   );
 };
 
-export default CategoryTable;
+export default Category;

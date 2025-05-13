@@ -49,3 +49,5 @@ or  install mailtrap
 
 16.install nanoid
     -> npm i nanoid
+17.install path
+    -> npm i path

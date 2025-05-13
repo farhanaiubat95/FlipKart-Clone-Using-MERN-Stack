@@ -1,4 +1,6 @@
+// src/redux/CategorySlice.js
 import { createSlice } from "@reduxjs/toolkit";
+import { get } from "../API/ApiEndPoints";
 
 const initialState = {
   loading: null,
@@ -11,7 +13,7 @@ const CategorySlice = createSlice({
   initialState,
   reducers: {
     SetCategories: (state, action) => {
-      state.categories = action.payload;
+     state.categories = action.payload;
       state.loading = false;
     },
     AddCategory: (state, action) => {
@@ -22,3 +24,4 @@ const CategorySlice = createSlice({
 
 export const { SetCategories, AddCategory } = CategorySlice.actions;
 export default CategorySlice.reducer;
+

@@ -45,16 +45,16 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="flex h-screen bg-gradient-to-r from-[#06204b] to-purple-900 text-white">
+        <div className="flex h-full bg-gradient-to-r from-[#06204b] to-purple-900 text-white ">
 
             {/* Sidebar */}
             <aside className={`
-                fixed top-0 left-0 h-full w-64 bg-[#06204b] p-4 space-y-4 
-                transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
-                md:translate-x-0 md:static md:block transition-transform duration-300 ease-in-out z-50
-            `}>
+            fixed top-0 left-0 h-screen xl:h-[94vh] w-64 bg-[#06204b] p-4 space-y-4 
+            transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+            xl:translate-x-0 xl:static xl:block transition-transform duration-300 ease-in-out z-50
+`}>
                 {/* Sidebar Header */}
-                <div className="flex justify-between items-center md:hidden">
+                <div className="flex justify-between items-center xl:hidden">
                     <h2 className="text-lg font-bold">Menu</h2>
                     <button onClick={toggleSidebar} className="text-white p-2 cursor-pointer">
                         <CloseIcon />
@@ -134,14 +134,15 @@ export default function Dashboard() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 bg-white rounded-tl-3xl p-6 overflow-y-auto text-black relative">
+            <main className="flex-1 bg-white rounded-tl-3xl p-6 overflow-y-auto text-black relative ">
 
-                {/* Mobile Toggle Button */}
-                <div className="md:hidden mb-4">
+                {/* Mobile Toggle Button - hidden on xl and up */}
+                <div className="xl:hidden mb-4">
                     <IconButton onClick={toggleSidebar} sx={{ color: '#06204b', backgroundColor: '#f0f0f0' }}>
                         {isSidebarOpen ? <CloseIcon /> : <MenuIcon />}
                     </IconButton>
                 </div>
+
 
                 <Outlet /> {/* This renders nested routes */}
             </main>

@@ -11,7 +11,6 @@ export const CreateProduct = async (request, response) => {
       brand,
       productPrice,
       productOffer,
-      productDiscount,
       productDescription,
       productCategory,
       productQuantity,
@@ -20,6 +19,7 @@ export const CreateProduct = async (request, response) => {
     } = request.body;
 
     let  productImage = [];
+    let productDiscount = 0;
 
     if(request.files.length>0){
         productImage = request.files.map((file) => {
@@ -50,8 +50,13 @@ export const CreateProduct = async (request, response) => {
     const categoryExists = await category.findById(productCategory);
     if (!categoryExists) {
       return response.status(400).json({ message: "Category does not exist" });
-    }
+}
 
+if (productOffer) {
+  productDiscount = productPrice - (productPrice * productOffer) / 100;
+} else {
+  productDiscount = productPrice;
+}
     // Create product (just pass the category _id)
     const product = await productModel.create({
       productName,
@@ -68,11 +73,12 @@ export const CreateProduct = async (request, response) => {
       inStock,
       createdBy,
     });
+    console.log(product);
 
-    return response.status(201).json(product);
+    return response.status(201).json({success: true, message: "Product created successfully", product });
   } catch (e) {
     console.error("Error in CreateProduct", e.message);
-    return response.status(500).json({ message: "Server Error", error: e.message });
+    return response.status(500).json({success: false, message: "Server Error", error: e.message });
   }
 };
 

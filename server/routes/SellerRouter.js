@@ -21,6 +21,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Accept up to 5 files under the field name 'images'
-Sellerrouter.post('/dashboard/create-product',isSeller,upload.array('productImage'),CreateProduct);
+Sellerrouter.post(
+  '/dashboard/create-product',
+  isSeller,
+  upload.array('productImage'),
+  CreateProduct
+);
 
 export default Sellerrouter;

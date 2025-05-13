@@ -53,7 +53,7 @@ const productSchema = new mongoose.Schema({
     },
     productQuantity: {
         type: Number,
-        // required: true,
+        default: 1
     },
     inStock: {
         type: Boolean,

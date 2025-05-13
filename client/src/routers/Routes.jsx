@@ -33,6 +33,7 @@ import MainSeller from '../components/Seller/MainSeller.jsx';
 import Category from '../components/Admin/Category.jsx';
 import Payment from '../components/Admin/Payment.jsx';
 import Notification from '../components/Admin/Notification.jsx';
+import Products from '../components/Seller/Products.jsx';
 
 const Routers = () => {
   return (
@@ -96,6 +97,9 @@ const Routers = () => {
           <Route path="/seller" element={<SellerLayout />}>
             <Route path='dashboard' element={<SellerDashboard />} >
               <Route index element={<MainSeller />} />
+
+              <Route path="products" element={<Products />} />
+              
             </Route>
           </Route>
         </Route>

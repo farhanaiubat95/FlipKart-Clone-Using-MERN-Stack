@@ -41,8 +41,8 @@ app.use(cors({
 // use body-parser
  app.use(bodyParser.json({ extended: true })); // to show the body which fill up or post to the server
  app.use(bodyParser.urlencoded({ extended: true })); // handle URL space
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+ app.use(express.json());
+ app.use(express.urlencoded({ extended: true }));
 
 // User Login & register
 app.use('/', Authrouters)

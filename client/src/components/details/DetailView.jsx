@@ -16,17 +16,17 @@ const Component = styled(Box)(({ theme }) => ({
     margin: '0 auto',
 }));
 
-const Container = styled(Grid)(() => ({
+const Container = styled(Box)(() => ({
+    width: '100%',
     backgroundColor: '#ffffff',
-    display: 'flex',
-    marginTop: '1px',
-    padding: '20px 10px',
+    marginTop: '100px',
+
 }));
 
 const DetailView = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
-    
+
     const { products, loading } = useSelector((state) => state.Product);
     const product = products.find((product) => product._id === id);
 
@@ -40,13 +40,18 @@ const DetailView = () => {
     return (
         <Component>
             {!loading && product &&
-                <Container container spacing={3}>
-                    <Grid item lg={4} md={4} sm={4} xs={12}>
-                        <ActionItems product={product} />
-                    </Grid>
-                    <Grid item lg={8} md={8} sm={8} xs={12}>
-                        <ProductDetails product={product} />
-                    </Grid>
+                <Container >
+
+                    <div className='flex flex-col lg:flex-row justify-center px-10 xl:px-0 xl:gap-5'>
+                        <div className='w-[90%] lg:w-[40%]' >
+                            <ActionItems product={product} />
+                        </div>
+
+                       <div className='w-[90%] lg:w-[60%]'>
+                         <ProductDetails  product={product} />
+                       </div>
+                    </div>
+
                 </Container>
             }
         </Component>

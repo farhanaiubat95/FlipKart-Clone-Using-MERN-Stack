@@ -1,10 +1,11 @@
 import express from 'express';
-import { AddToCart ,} from '../controller/CustomerController.js';
-import { requireSignin,isCustomer } from '../middleware/VerifyToken.js';
+import { AddToCart ,GetCart,RemoveFromCart} from '../controller/CustomerController.js';
+import { requireSignin,isCustomer  } from '../middleware/VerifyToken.js';
 
-const CartRouter = express.Router();
+const Customerrouter = express.Router();
 
-CartRouter.post('/cart/addtocart',requireSignin, isCustomer, AddToCart);    
-// CartRouter.get('/cart/getcart',GetCart);
+Customerrouter.post('/cart/addtocart',requireSignin, isCustomer, AddToCart);    
+Customerrouter.get('/cart/getcart', requireSignin, isCustomer, GetCart);
+Customerrouter.delete('/remove/:id', RemoveFromCart);
 
-export default CartRouter;
+export default Customerrouter;

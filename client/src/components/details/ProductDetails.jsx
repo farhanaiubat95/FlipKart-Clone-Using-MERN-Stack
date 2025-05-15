@@ -82,7 +82,7 @@ const ProductDetails = ({ product }) => {
                     product.productOffer > 0 ? (
                         <>
                             <Box component={"span"} style={{ fontSize: 28, fontWeight: 600 }}>Tk   {product.productPriceAfterDiscount}</Box>
-                            <Box component={"span"} style={{ color: '#878787', margin: '0 15px', fontSize: 16 }}><strike>Tk  {product.productDiscount}</strike></Box>
+                            <Box component={"span"} style={{ color: '#878787', margin: '0 15px', fontSize: 16 }}><strike>Tk  {product.productPrice}</strike></Box>
                             <Box component={"span"} style={{ color: '#388E3C', fontSize: 16 }}>{product.productOffer}% off</Box>
                         </>
                     ): (
@@ -189,7 +189,7 @@ const ProductDetails = ({ product }) => {
                         <TableCell style={{ color: '#878787', verticalAlign: 'top' }}>Seller</TableCell>
                         <TableCell style={{ fontWeight: 600, verticalAlign: 'top' }}>
                             <Box style={{ display: 'flex', alignItems: 'center' }}>
-                                <CommonText style={{ textTransform: 'uppercase' }}>SuperComNet</CommonText>
+                                <CommonText style={{ textTransform: 'uppercase' }}>{product.createdBy.shopName}</CommonText>
                                 <Box style={{ display: 'flex', alignItems: 'center', marginLeft: 10, padding: '2px 5px', background: '#2874f0', borderRadius: 50 }}>
                                     <span style={{ color: 'white', marginRight: 2, fontSize: 11, fontWeight: 'bold' }}>4.5</span>
                                     <StarIcon style={{ color: 'white', fontSize: 12 }} />

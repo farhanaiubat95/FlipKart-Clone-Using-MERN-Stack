@@ -3,6 +3,7 @@ import AuthSlice from "./AuthSlice";
 import OrderSlice from "./OrderSlice";
 import CategorySlice from "./CategorySlice";
 import ProductSlice from "./ProductSlice";
+import CartSlice from "./CartSlice";
 
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 import { persistStore, persistReducer } from 'redux-persist';
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   Order: OrderSlice,
   Category: CategorySlice,
   Product: ProductSlice,
+  Cart: CartSlice, 
 });
 
 // persist config

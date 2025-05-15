@@ -27,7 +27,7 @@ import Main from '../components/Admin/Main.jsx';
 import VerifyEmail from '../pages/LogSign/VerifyEmail.jsx';
 import SellerDashboard from '../components/Seller/SellerDashboard.jsx';
 import CustomerHome from '../pages/CustomerHome.jsx';
-import Cart from '../components/Customer/Cart.jsx';
+import Cart from '../components/Customer/cart/Cart.jsx';
 import Edit from '../components/Admin/Edit.jsx';
 import MainSeller from '../components/Seller/MainSeller.jsx';
 import Category from '../components/Admin/Category.jsx';

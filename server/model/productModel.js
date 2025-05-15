@@ -41,6 +41,9 @@ const productSchema = new mongoose.Schema({
     productDiscount: {
         type: Number,
     },
+    productPriceAfterDiscount: {
+        type: Number
+    },
       
     productDescription: {
         type: String,
@@ -75,9 +78,17 @@ const productSchema = new mongoose.Schema({
         max: 5
     },
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users',
+       id: {
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "User",
+       },
+       name: String,
+       shopName: String,
+       email: String,
+       phone: String,
+       address: String
     },
+
       
 
 }, { timestamps: true });

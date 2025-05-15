@@ -337,7 +337,7 @@ const OtherNavButton = () => {
 
         <StyleIcon>
           <Typography style={{ display: 'flex', alignItems: 'center' }}>
-            <Typography>More</Typography>&nbsp;
+            <span>More</span>&nbsp;
             <KeyboardArrowDownIcon className="arrow-icon" style={{ fontSize: 16 }} />
           </Typography>
 

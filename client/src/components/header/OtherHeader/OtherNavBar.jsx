@@ -194,7 +194,7 @@ const OtherNavBar = () => {
     </Box>
   );
 
-  const isAdminOrSeller = user?.role === 'admin' || user?.role === 'seller';
+  const isAdminOrSeller = user?.role === 'admin' || user?.role === 'seller' || user?.role === 'customer';
 
   const location = useLocation();
   const isDashboardRoute = location.pathname.includes('/admin/dashboard') || location.pathname.includes('/seller/dashboard');;

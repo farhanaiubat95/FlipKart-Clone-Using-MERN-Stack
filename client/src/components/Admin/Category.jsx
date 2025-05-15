@@ -16,12 +16,12 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  IconButton,
 } from "@mui/material";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
-import IconButton from "@mui/material/IconButton";
 import toast from "react-hot-toast";
 import { SetCategories } from "../../redux/CategorySlice";
 
@@ -104,13 +104,7 @@ const Category = () => {
     try {
       const formData = new FormData();
       formData.append("categoryName", categoryName);
-
-      if (parentId) {
-        formData.append("parentId", parentId);
-      } else {
-        formData.append("parentId", "");
-      }
-
+      formData.append("parentId", parentId || "");
       if (categoryImage) {
         formData.append("categoryImage", categoryImage);
       }
@@ -127,8 +121,6 @@ const Category = () => {
 
       if (res.data.success) {
         toast.success("Category updated successfully");
-
-        // Immediately update Redux categories
         dispatch(
           SetCategories(
             categories.map((cat) =>
@@ -137,7 +129,6 @@ const Category = () => {
           )
         );
 
-        // Reset form states
         setEditMode(false);
         setEditCategoryData(null);
         setCategoryName("");
@@ -161,6 +152,8 @@ const Category = () => {
   };
 
   const mainCategories = categories.filter((cat) => !cat.parentId);
+  const subCategories = categories.filter((cat) => cat.parentId);
+  const totalCategoryCount = categories.length;
 
   const getSubcategories = (parentId) =>
     categories.filter((cat) => cat.parentId === parentId);
@@ -172,14 +165,15 @@ const Category = () => {
   const handleDelete = async (categoryId) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        const res = await axios.delete(`http://localhost:5000/admin/deletecategory/${categoryId}`);
+        const res = await axios.delete(
+          `http://localhost:5000/admin/deletecategory/${categoryId}`
+        );
         if (res.data.success) {
           toast.success("Category deleted successfully");
-          // Update Redux state
           dispatch(
             SetCategories(categories.filter((cat) => cat._id !== categoryId))
           );
-          fetchCategories();  // Refresh the categories list
+          fetchCategories();
         } else {
           toast.error(res.data.message);
         }
@@ -234,29 +228,23 @@ const Category = () => {
           </TableCell>
 
           <TableCell>
-            <div>
-              <img
-                src={cat.categoryImage}
-                className={"w-[50px] h-[50px] rounded-full"}
-                alt=""
-              />
-            </div>
+            <img
+              src={cat.categoryImage}
+              className="w-[50px] h-[50px] rounded-full"
+              alt=""
+            />
           </TableCell>
 
           <TableCell>
             <div className="flex gap-2">
-              <Button
-                size="small"
-                variant="contained"
-                onClick={() => handleEditClick(cat)}
-              >
+              <Button size="small" variant="contained" onClick={() => handleEditClick(cat)}>
                 Edit
               </Button>
               <Button
                 size="small"
                 variant="contained"
                 color="error"
-                onClick={() => handleDelete(cat._id)}  // Trigger delete
+                onClick={() => handleDelete(cat._id)}
               >
                 Delete
               </Button>
@@ -273,6 +261,19 @@ const Category = () => {
 
   return (
     <Box>
+      {/* Category Count Summary */}
+      <Box className="flex flex-wrap justify-around items-center gap-4 px-6 py-4 bg-[#f1f5f9] shadow-md">
+        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#246275" }}>
+          Total Categories: {totalCategoryCount}
+        </Typography>
+        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#246275" }}>
+          Main Categories: {mainCategories.length}
+        </Typography>
+        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#246275" }}>
+          Subcategories: {subCategories.length}
+        </Typography>
+      </Box>
+
       <Box className="flex justify-end p-3 bg-[#28325682]">
         <Button
           variant="contained"
@@ -290,133 +291,70 @@ const Category = () => {
       </Box>
 
       <Box className="flex justify-between xl:flex-row flex-col items-start p-6 gap-6">
-        {/* Conditionally show add or edit form */}
-        {!editMode ? (
-          <Box className="form-box w-full xl:w-[40%] rounded-5xl border shadow-lg">
-            <Card>
-              <CardContent className="space-y-6 p-6">
-                <Typography
-                  sx={{
-                    color: "#246275",
-                    fontWeight: "bold",
-                    fontSize: "1.5rem",
-                  }}
-                  className="text-2xl font-bold text-center py-5"
+        {/* Add/Edit Form */}
+        <Box className="form-box w-full xl:w-[40%] rounded-5xl border shadow-lg">
+          <Card>
+            <CardContent className="space-y-6 p-6">
+              <Typography
+                sx={{
+                  color: "#246275",
+                  fontWeight: "bold",
+                  fontSize: "1.5rem",
+                }}
+                className="text-2xl font-bold text-center py-5"
+              >
+                {editMode ? "Edit Category" : "Add New Category"}
+              </Typography>
+
+              <TextField
+                sx={{ mb: 2 }}
+                label="Category Name"
+                variant="outlined"
+                fullWidth
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+              />
+
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel id="parent-category-label">Parent Category</InputLabel>
+                <Select
+                  labelId="parent-category-label"
+                  value={parentId}
+                  label="Parent Category"
+                  onChange={(e) => setParentId(e.target.value)}
                 >
-                  Add New Category
-                </Typography>
+                  {createCategoryList(categories).map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-                <TextField
-                  sx={{ mb: 2 }}
-                  label="Category Name"
-                  variant="outlined"
-                  fullWidth
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
-                />
-
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel id="parent-category-label">Parent Category</InputLabel>
-                  <Select
-                    labelId="parent-category-label"
-                    value={parentId}
-                    label="Parent Category"
-                    onChange={(e) => setParentId(e.target.value)}
-                  >
-                    {createCategoryList(categories).map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <TextField
-                  fullWidth
-                  type="file"
-                  onChange={handleFileChange}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+              <TextField
+                fullWidth
+                type="file"
+                onChange={handleFileChange}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
                    file:rounded-full file:border-0 file:text-sm file:font-semibold
                    file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
+              />
 
-                <Button
-                  onClick={handleSubmit}
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  className="!mt-4"
-                  sx={{ backgroundColor: "#246275", padding: "10px" }}
-                >
-                  SUBMIT
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
-        ) : (
-          <Box className="edit-box w-full xl:w-[40%] rounded-5xl border shadow-lg">
-            <Card>
-              <CardContent className="space-y-6 p-6">
-                <Typography
-                  sx={{
-                    color: "#246275",
-                    fontWeight: "bold",
-                    fontSize: "1.5rem",
-                  }}
-                  className="text-2xl font-bold text-center py-5"
-                >
-                  Edit Category
-                </Typography>
+              <Button
+                onClick={editMode ? handleUpdate : handleSubmit}
+                variant="contained"
+                color="primary"
+                fullWidth
+                className="!mt-4"
+                sx={{ backgroundColor: "#246275", padding: "10px" }}
+              >
+                {editMode ? "UPDATE" : "SUBMIT"}
+              </Button>
+            </CardContent>
+          </Card>
+        </Box>
 
-                <TextField
-                  sx={{ mb: 2 }}
-                  label="Category Name"
-                  variant="outlined"
-                  fullWidth
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
-                />
-
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel id="parent-category-label">Parent Category</InputLabel>
-                  <Select
-                    labelId="parent-category-label"
-                    value={parentId}
-                    label="Parent Category"
-                    onChange={(e) => setParentId(e.target.value)}
-                  >
-                    {createCategoryList(categories).map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <TextField
-                  fullWidth
-                  type="file"
-                  onChange={handleFileChange}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                   file:rounded-full file:border-0 file:text-sm file:font-semibold
-                   file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-
-                <Button
-                  onClick={handleUpdate}
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  className="!mt-4"
-                  sx={{ backgroundColor: "#246275", padding: "10px" }}
-                >
-                  UPDATE
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
-        )}
-
+        {/* Category Table */}
         <Box className="table-box w-full xl:w-[60%]">
           <TableContainer sx={{ maxHeight: 500 }}>
             <Table stickyHeader>

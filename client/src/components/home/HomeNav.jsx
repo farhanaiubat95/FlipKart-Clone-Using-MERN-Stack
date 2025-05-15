@@ -1,7 +1,10 @@
 import React from 'react';
 import { Box, Grid, Link, Typography, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
+
+// Icon
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -15,43 +18,26 @@ const StyledBox = styled(Box)(({ theme }) => ({
   padding: "10px",
 }));
 
-const StyledBox1 = styled(Link)(({ theme }) => ({
-  cursor: "pointer",
-  textAlign: "center",
-  textDecoration: "none",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  padding: "10px",
-  color: theme.palette.text.primary,
+const StyledBox1 = styled(Link)`
+  width: 130px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+  padding: 10px 26px;  
 
-  "& > img": {
-    width: "64px",
-  },
+  & > img {
+    width: 64px;
+  }
 
-  "&:hover .arrow-icon": {
-    transform: "rotate(180deg)",
-    transition: "transform 0.2s linear",
-  },
+  &:hover .arrow-icon {
+    transform: rotate(180deg);
+    transition: transform 0.2s linear;
+  }
+`;
 
-  [theme.breakpoints.down('xl')]: {
-    padding: "10px 20px",
-    "& > img": {
-      width: "50px",
-    },
-  },
-
-  [theme.breakpoints.down('lg')]: {
-    padding: "10px 10px",
-  },
-
-  [theme.breakpoints.down('md')]: {
-    padding: "10px 10px",
-    "& > img": {
-      width: "50px",
-    },
-  },
-}));
 
 const StyleIcon = styled(Box)`
   border-radius: 5px;
@@ -68,7 +54,7 @@ const StyleIcon = styled(Box)`
 `;
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-  width: "100px",
+  width: "80px",
   fontSize: "14px",
   fontWeight: 700,
   color: "rgb(0, 0, 0)",
@@ -97,87 +83,27 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 // Main Component
 const HomeNav = () => {
   const categories = useSelector((state) => state.Category?.categories) || [];
-  const theme = useTheme();
-
-  // Media Queries
-  const isXs = useMediaQuery(theme.breakpoints.only('xs'));
-  const isSm = useMediaQuery(theme.breakpoints.only('sm'));
-  const isLgUp = useMediaQuery(theme.breakpoints.up('lg'));
 
   // Filter only main categories (those without parentID)
-  const mainCategories = categories.filter((cat) => !cat.parentID);
-
-  // Helper to get subcategories
-  const getSubcategories = (parentId) =>
-    categories.filter((cat) => cat.parentID === parentId);
-  // Preprocess: create a map { parentId: [subcategories...] }
-  const subcategoriesMap = categories.reduce((acc, cat) => {
-    if (cat.parentID) {
-      if (!acc[cat.parentID]) {
-        acc[cat.parentID] = [];
-      }
-      acc[cat.parentID].push(cat);
-    }
-    return acc;
-  }, {});
-
-  // Determine the number of categories to display
-  let displayLimit = 9;
-  if (isXs) {
-    displayLimit = 5;
-  } else if (isSm) {
-    displayLimit = 8;
-  } else if (isLgUp) {
-    displayLimit = 9;
-  }
-
-  // Take only up to displayLimit
-  const displayedCategories = mainCategories.slice(0, displayLimit);
+  const mainCategories = categories.filter((cat) => !cat.parentId);
+  const subCategories = categories.filter((cat) => cat.parentId);
+  const totalCategoryCount = categories.length;
 
   return (
     <StyledBox className='w-[90%] m-auto overflow-hidden'>
-      <Grid
-        container
-        spacing={2}
-        className='w-[100%] m-auto'
-        sx={{
-          flexWrap: 'nowrap',
-          overflow: 'hidden',
-        }}
-      >
-        {displayedCategories.map((cat) => {
-          const hasSubs = subcategoriesMap[cat._id]?.length > 0;
 
-        
-  
-        return (
-            <Grid
-              item
-              key={cat._id}
-              sx={{
-                flex: '0 0 auto',
-                width: {
-                  xs: '21%',
-                  sm: '12.5%',
-                  lg: '10.11%',
-                },
-              }}
-            >
-              <StyledBox1>
-                <img src={cat.categoryImage} alt={cat.categoryName} className='w-[64px] h-[64px] object-cover' />
-                <StyleIcon style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <StyledTypography>{cat.categoryName}</StyledTypography>
-
-                  {/* Show arrow only if has subcategory */}
-                  {!hasSubs && (
-                    <KeyboardArrowDownIcon style={{ marginTop: "5px" }} className="arrow-icon" />
-                  )}
-                </StyleIcon>
-              </StyledBox1>
-            </Grid>
-          );
-        })}
-
+      <Grid container spacing={2}>
+        {mainCategories.map((cat) => (
+          <Grid item xs={2} key={cat._id}>
+            <StyledBox1 href={`/category/${cat.slug}`}>
+              <img src={cat.categoryImage} alt={cat.categoryName} className='w-[64px] h-[64px]' />
+              <StyleIcon style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <StyledTypography>{cat.categoryName}</StyledTypography>
+                <KeyboardArrowDownIcon style={{ marginTop: "5px" }} className="arrow-icon" />
+              </StyleIcon>
+            </StyledBox1>
+          </Grid>
+        ))}
       </Grid>
     </StyledBox>
   );

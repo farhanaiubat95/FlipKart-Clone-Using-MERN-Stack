@@ -34,6 +34,7 @@ import Category from '../components/Admin/Category.jsx';
 import Payment from '../components/Admin/Payment.jsx';
 import Notification from '../components/Admin/Notification.jsx';
 import Products from '../components/Seller/Products.jsx';
+import DetailView from '../components/details/DetailView.jsx';
 
 const Routers = () => {
   return (
@@ -106,6 +107,7 @@ const Routers = () => {
 
         {/* Catch All */}
         <Route path="*" element={<ErrorPage />} />
+        <Route path="/product/:id" element={<DetailView />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </>

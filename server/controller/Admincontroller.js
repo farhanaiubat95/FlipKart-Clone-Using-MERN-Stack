@@ -210,8 +210,6 @@ if (req.file) {
   delete updatedData.categoryImage;
 }
 
-
-
     const category = await Category.findByIdAndUpdate(
       req.params.id,
       updatedData,

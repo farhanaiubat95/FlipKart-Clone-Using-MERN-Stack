@@ -1,29 +1,26 @@
 import React, { useState, useEffect } from "react";
 import {
-    Box,
-    Typography,
-    TextField,
-    Button,
-    MenuItem,
-    Paper,
-    Avatar,
-    Chip,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
+    Box, Typography, TextField, Button, MenuItem, Paper,
+    Avatar, Chip, Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { SetProducts } from "../../redux/ProductSlice"; // adjust path if needed
+import { SetProducts } from "../../redux/ProductSlice";
 import axios from "axios";
 import toast from "react-hot-toast";
+
+// icons
+import EditSquareIcon from '@mui/icons-material/EditSquare';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Products = () => {
     const dispatch = useDispatch();
     const { products } = useSelector((state) => state.Product);
     const { categories } = useSelector((state) => state.Category);
+    const user = useSelector((state) => state.Auth.user);
+
+    const [formMode, setFormMode] = useState("add");
+    const [editId, setEditId] = useState(null);
 
     const [productName, setProductName] = useState("");
     const [productTitle, setProductTitle] = useState("");
@@ -33,24 +30,69 @@ const Products = () => {
     const [productDescription, setProductDescription] = useState("");
     const [productCategory, setProductCategory] = useState("");
     const [productQuantity, setProductQuantity] = useState("");
-    const [createdBy, setCreatedBy] = useState("");
     const [productImage, setProductImage] = useState([]);
 
-    const handleFileChange = (e) => {
-        setProductImage([...e.target.files]); // support multiple files
+    const [product, setProduct] = useState(null);
+
+    const resetForm = () => {
+        setProduct(null);
+        setProductName("");
+        setProductTitle("");
+        setBrand("");
+        setProductPrice("");
+        setProductOffer("");
+        setProductDescription("");
+        setProductCategory("");
+        setProductQuantity("");
+        setProductImage([]);
+        setEditId(null);
+        setFormMode("add");
     };
 
     const fetchProducts = () => {
         axios.get("http://localhost:5000/allproducts")
-            .then(res => {
-                dispatch(SetProducts(res.data.products));
-            })
+            .then(res => dispatch(SetProducts(res.data.products)))
             .catch(error => console.error(error));
     };
 
     useEffect(() => {
         fetchProducts();
     }, [dispatch]);
+
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        setProductImage(files);
+    };
+
+    const handleEdit = (product) => {
+        setProduct(product);
+        setFormMode("edit");
+        setEditId(product._id);
+        setProductName(product.productName);
+        setProductTitle(product.productTitle);
+        setBrand(product.brand);
+        setProductPrice(product.productPrice);
+        setProductOffer(product.productOffer);
+        setProductDescription(product.productDescription);
+        setProductCategory(product.productCategory);
+        setProductQuantity(product.productQuantity);
+        setProductImage([]);
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            const res = await axios.delete(`http://localhost:5000/seller/delete-product/${id}`);
+            if (res.data.success) {
+                toast.success("Product deleted successfully");
+                fetchProducts();
+            } else {
+                toast.error(res.data.message);
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to delete product");
+        }
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -65,45 +107,41 @@ const Products = () => {
             formData.append("productDescription", productDescription);
             formData.append("productCategory", productCategory);
             formData.append("productQuantity", productQuantity);
-            formData.append("createdBy", createdBy);
-            formData.append("inStock", true);
+            formData.append("createdBy", user?._id);
 
-            productImage.forEach((img) => {
-                formData.append("productImage", img);
-            });
+            if (productImage.length > 0) {
+                productImage.forEach((img) => {
+                    formData.append("productImage", img);
+                });
+            } else if (formMode === "edit") {
+                formData.append("retainOldImages", "true");
+            }
 
-            const res = await axios.post(
-                "http://localhost:5000/seller/dashboard/create-product",
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                         
-                    },
-                }
-            );
+            let res;
 
+            if (formMode === "add") {
+                res = await axios.post("http://localhost:5000/seller/dashboard/create-product", formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                    withCredentials: true,
+                });
+            } else {
+                res = await axios.put(`http://localhost:5000/seller/update-product/${editId}`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                    withCredentials: true,
+                });
+            }
 
             if (res.data.success) {
                 toast.success(res.data.message);
                 fetchProducts();
-                // Reset form
-                setProductName("");
-                setProductTitle("");
-                setBrand("");
-                setProductPrice("");
-                setProductOffer("");
-                setProductDescription("");
-                setProductCategory("");
-                setProductQuantity("");
-                setCreatedBy("");
-                setProductImage([]);
+                resetForm();
             } else {
                 toast.error(res.data.message);
             }
+
         } catch (error) {
             console.error(error);
-            toast.error("Failed to create product");
+            toast.error("Something went wrong");
         }
     };
 
@@ -114,10 +152,11 @@ const Products = () => {
 
     return (
         <Box p={4}>
-            <Box>
+            <Box className="form-container">
                 <Typography variant="h5" gutterBottom>
-                    Add New Product
+                    {formMode === "add" ? "Add New Product" : "Edit Product"}
                 </Typography>
+
                 <Box
                     component={Paper}
                     p={2}
@@ -129,10 +168,10 @@ const Products = () => {
                     <TextField label="Name" value={productName} onChange={(e) => setProductName(e.target.value)} required />
                     <TextField label="Title" value={productTitle} onChange={(e) => setProductTitle(e.target.value)} required />
                     <TextField label="Brand" value={brand} onChange={(e) => setBrand(e.target.value)} required />
-                    <TextField label="Price" type="number" value={productPrice} onChange={(e) => setProductPrice(e.target.value)} required />
+                    <TextField label="Price" type="number" value={productPrice} onChange={(e) => setProductPrice(Number(e.target.value))} required />
                     <TextField label="Offer (%)" type="number" value={productOffer} onChange={(e) => setProductOffer(e.target.value)} />
                     <TextField label="Quantity" type="number" value={productQuantity} onChange={(e) => setProductQuantity(e.target.value)} required />
-                    <TextField label="Description" value={productDescription} onChange={(e) => setProductDescription(e.target.value)} multiline rows={1} />
+                    <TextField label="Description" value={productDescription} onChange={(e) => setProductDescription(e.target.value)} multiline rows={1} required />
                     <TextField
                         select
                         label="Category"
@@ -141,112 +180,156 @@ const Products = () => {
                         required
                     >
                         {categories.map((cat) => (
-                            <MenuItem key={cat._id} value={cat._id}>
-                                {cat.categoryName}
-                            </MenuItem>
+                            <MenuItem key={cat._id} value={cat._id}>{cat.categoryName}</MenuItem>
                         ))}
                     </TextField>
-                    <TextField
-                        label="Created By"
-                        value={createdBy}
-                        onChange={(e) => setCreatedBy(e.target.value)}
-                        required
-                    />
-                    <TextField
-                        fullWidth
-                        type="file"
-                        multiple
-                        onChange={handleFileChange}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                                       file:rounded-full file:border-0 file:text-sm file:font-semibold
-                                       file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    />
+
+                    {/* Start of Image Upload */}
+                    <Box>
+                        <TextField
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="block w-full text-sm text-gray-500"
+                        />
+
+                        {formMode === "edit" && (
+                            <>
+                                {/* Existing Images */}
+                                {product?.productImage?.length > 0 && (
+                                    <Box mt={1} display="flex" gap={1} flexWrap="wrap">
+                                        {product.productImage.map((imgObj, index) => (
+                                            <Avatar
+                                                key={index}
+                                                src={`http://localhost:5000/uploads/${imgObj.img}`}
+                                                variant="square"
+                                                sx={{ width: 56, height: 56 }}
+                                                title="Existing Image"
+                                            />
+                                        ))}
+                                    </Box>
+                                )}
+
+                                {/* New Selected Image Previews */}
+                                {productImage.length > 0 && (
+                                    <Box mt={1} display="flex" gap={1} flexWrap="wrap">
+                                        {productImage.map((file, index) => (
+                                            <Avatar
+                                                key={index}
+                                                src={URL.createObjectURL(file)}
+                                                variant="square"
+                                                sx={{ width: 56, height: 56, border: "2px solid green" }}
+                                                title="New Selected Image"
+                                            />
+                                        ))}
+                                    </Box>
+                                )}
+
+                                <Typography variant="caption" color="textSecondary">
+                                    * Leave empty to keep existing images
+                                </Typography>
+                            </>
+                        )}
+                    </Box>
+                    {/* End of Image Upload */}
                 </Box>
 
-                <Button
-                    onClick={handleSubmit}
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{ backgroundColor: "#246275", padding: "10px" }}
-                >
-                    SUBMIT
-                </Button>
+                <Box display="flex" gap={2}>
+                    <Button
+                        onClick={handleSubmit}
+                        variant="contained"
+                        color="primary"
+                        sx={{ backgroundColor: "#246275", padding: "10px", flex: 1 }}
+                    >
+                        {formMode === "add" ? "SUBMIT" : "UPDATE"}
+                    </Button>
+                    {formMode === "edit" && (
+                        <Button
+                            onClick={resetForm}
+                            variant="outlined"
+                            sx={{ padding: "10px", backgroundColor: "#5c5d3c", color: "white" }}
+                        >
+                            Cancel Edit
+                        </Button>
+                    )}
+                </Box>
             </Box>
 
-            <Box>
+            {/* Product Table */}
+            <Box className="table-container">
                 <Typography variant="h5" gutterBottom mt={6}>
                     All Products
                 </Typography>
 
-                <div className="overflow-auto w-full ">
-                    <div className="min-w-[600px] sm:min-w-[800px] md:min-w-[1000px] lg:min-w-[1300px] xl:min-w-[1600px]">
-                        <TableContainer component={Paper}>
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow>
-                                        {[
-                                            "Images", "Name", "Title", "Brand", "Price", "Offer (%)", "Discount",
-                                            "Description", "Category", "Quantity", "In Stock", "Rating", "Reviews",
-                                            "Created By", "Created At",
-                                        ].map((header, index) => (
-                                            <TableCell key={index} align="center" sx={{ fontWeight: "bold", fontSize: "12px", whiteSpace: "nowrap" }}>
-                                                {header}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {products.map((product) => (
-                                        <TableRow key={product._id}>
-                                            <TableCell align="center">
-                                                {product.productImage?.map((imgObj, i) => (
-                                                    <Avatar
-                                                        key={i}
-                                                        src={`http://localhost:5000/uploads/${imgObj.img}`}
-                                                        alt="product"
-                                                        variant="square"
-                                                        sx={{ width: 40, height: 40, mr: 0.5 }}
-                                                    />
-                                                ))}
-                                            </TableCell>
-                                            <TableCell align="center">{product.productName}</TableCell>
-                                            <TableCell align="center">{product.productTitle}</TableCell>
-                                            <TableCell align="center">{product.brand}</TableCell>
-                                            <TableCell align="center">${product.productPrice}</TableCell>
-                                            <TableCell align="center">{product.productOffer}%</TableCell>
-                                            <TableCell align="center">${product.productDiscount}</TableCell>
-                                            <TableCell align="center">{product.productDescription}</TableCell>
-                                            <TableCell align="center">
-                                                {getCategoryName(product.productCategory)}
-                                            </TableCell>
-                                            <TableCell align="center">{product.productQuantity}</TableCell>
-                                            <TableCell align="center">
-                                                <Chip label={product.inStock ? "Yes" : "No"} color={product.inStock ? "success" : "error"} size="small" />
-                                            </TableCell>
-                                            <TableCell align="center">{product.productRatings}/5</TableCell>
-                                            <TableCell align="center">
-                                                {product.productReviews?.length > 0
-                                                    ? product.productReviews.map((r, i) => (
-                                                        <Typography key={i} variant="body2">
-                                                            - {r.reviews}
-                                                        </Typography>
-                                                    ))
-                                                    : "No reviews"}
-                                            </TableCell>
-                                            <TableCell align="center">
-                                                {product.createdBy?.name || product.createdBy}
-                                            </TableCell>
-                                            <TableCell align="center">
-                                                {new Date(product.createdAt).toLocaleString()}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </div>
-                </div>
+                <TableContainer component={Paper} sx={{ maxHeight: 350, overflow: "auto" }}>
+                    <Table size="small" stickyHeader>
+                        <TableHead>
+                            <TableRow>
+                                {["Actions", "Images", "Name", "Title", "Brand", "Price", "Offer (%)", "Discount", "After Discount", "Description", "Category", "Quantity", "In Stock", "Rating", "Reviews", "Created By", "Created At"].map((header, index) => (
+                                    <TableCell key={index} align="center" sx={{ fontWeight: "bold", fontSize: "12px", backgroundColor: "#f5f5f5", top: 0, zIndex: 1 }}>
+                                        {header}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {products.map((product) => (
+                                <TableRow key={product._id}>
+                                    <TableCell align="center">
+                                        <Button onClick={() => handleEdit(product)} sx={{ minWidth: "unset", mr: 1 }}><EditSquareIcon /></Button>
+                                        <Button color="error" onClick={() => handleDelete(product._id)} sx={{ minWidth: "unset" }}><DeleteIcon /></Button>
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        <Box position="relative" display="inline-block">
+                                            <Avatar
+                                                src={`http://localhost:5000/uploads/${product.productImage?.[0]?.img}`}
+                                                variant="square"
+                                                sx={{ width: 40, height: 40 }}
+                                            />
+                                            {product.productImage?.length > 1 && (
+                                                <Box
+                                                    position="absolute"
+                                                    top={0}
+                                                    right={0}
+                                                    bgcolor="rgba(0,0,0,0.6)"
+                                                    color="white"
+                                                    fontSize="10px"
+                                                    px={0.5}
+                                                    borderRadius="4px"
+                                                >
+                                                    +{product.productImage.length - 1}
+                                                </Box>
+                                            )}
+                                        </Box>
+                                    </TableCell>
+
+                                    <TableCell align="center">{product.productName}</TableCell>
+                                    <TableCell sx={{ maxWidth: 120, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} align="center">{product.productTitle}</TableCell>
+                                    <TableCell align="center">{product.brand}</TableCell>
+                                    <TableCell align="center">Tk{product.productPrice}</TableCell>
+                                    <TableCell align="center">{product.productOffer}%</TableCell>
+                                    <TableCell align="center">Tk{product.productDiscount}</TableCell>
+                                    <TableCell align="center">Tk{product.productPriceAfterDiscount}</TableCell>
+                                    <TableCell sx={{ maxWidth: 120, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} align="center">{product.productDescription}</TableCell>
+                                    <TableCell align="center">{getCategoryName(product.productCategory)}</TableCell>
+                                    <TableCell align="center">{product.productQuantity}</TableCell>
+                                    <TableCell align="center">
+                                        <Chip label={product.inStock ? "Yes" : "No"} color={product.inStock ? "success" : "error"} size="small" />
+                                    </TableCell>
+                                    <TableCell align="center">{product.productRatings}/5</TableCell>
+                                    <TableCell align="center">
+                                        {product.productReviews?.length ? product.productReviews.map((r, i) => (
+                                            <Typography key={i} variant="body2">- {r.reviews}</Typography>
+                                        )) : "No reviews"}
+                                    </TableCell>
+                                    <TableCell align="center">{product.createdBy?.name || product.createdBy}</TableCell>
+                                    <TableCell align="center">{new Date(product.createdAt).toLocaleString()}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Box>
         </Box>
     );

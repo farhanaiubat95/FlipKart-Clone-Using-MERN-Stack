@@ -23,7 +23,7 @@ const SellerDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-scereen bg-gray-100">
 
       {/* Sidebar */}
       <aside
@@ -65,7 +65,7 @@ const SellerDashboard = () => {
       </aside>
 
       {/* Main Dashboard Area */}
-      <main className="flex-1 bg-white rounded-tl-3xl cursor-pointer p-6 overflow-y-auto text-black relative">
+      <main className=" h-[90vh] flex-1 bg-white rounded-tl-3xl  p-6 overflow-y-auto text-black relative">
         {/* Mobile Toggle Button - Hidden on xl */}
         <div className="xl:hidden mb-4">
           <IconButton
@@ -77,11 +77,16 @@ const SellerDashboard = () => {
         </div>
 
         {/* Top Right Header */}
-        <header className="flex items-center justify-end p-2 bg-gray-800 text-white rounded">
-          <div className="px-4"><Notifications /></div>
-          <div className="flex items-center space-x-2 px-4">
-            <Person />
-            <span>{user.firstname} {user.lastname}</span>
+        <header className="flex items-center justify-between p-2 bg-gray-800 text-white rounded">
+          <div>
+            <button className="bg-[#246275] hover:bg-[#246275]/80 text-white py-1 px-4 rounded cursor-pointer">Add New Product</button>
+          </div>
+          <div className="flex items-center">
+            <div className="px-4"><Notifications /></div>
+            <div className="flex items-center space-x-2 px-4">
+              <Person />
+              <span>{user.firstname} {user.lastname}</span>
+            </div>
           </div>
         </header>
 

@@ -63,13 +63,27 @@ export const GetCart = async (req, res) => {
 
 export const RemoveFromCart = async (req, res) => {
   try {
-    const { id } = req.params;
-    // example using Mongoose
-    await CartModel.findByIdAndDelete(id); 
-    res.status(200).json({ message: "Item removed successfully" });
+    const userId = req.user._id;
+    const productId = req.params.id;
+
+    const updatedCart = await CartModel.findOneAndUpdate(
+      { user: userId },
+      { $pull: { cartItems: { product: productId } } },
+      { new: true }
+    );
+
+    if (!updatedCart) {
+      return res.status(404).json({ success: false, message: "Cart or item not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Item removed successfully",
+      cart: updatedCart,
+    });
   } catch (error) {
     console.error('Error deleting item:', error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
 

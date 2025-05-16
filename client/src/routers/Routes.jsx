@@ -35,7 +35,7 @@ import Payment from '../components/Admin/Payment.jsx';
 import Notification from '../components/Admin/Notification.jsx';
 import Products from '../components/Seller/Products.jsx';
 import DetailView from '../components/details/DetailView.jsx';
-
+import Checkout from '../components/Customer/cart/Checkout.jsx';
 const Routers = () => {
   return (
     <>
@@ -71,6 +71,7 @@ const Routers = () => {
           <Route path="/myaccount" element={<CustomerLayout />} >
             <Route index element={<CustomerHome />} />
             <Route path="cart" element={<Cart />} />
+            <Route path="checkout" element={<Checkout />} />
 
           </Route>
         </Route>

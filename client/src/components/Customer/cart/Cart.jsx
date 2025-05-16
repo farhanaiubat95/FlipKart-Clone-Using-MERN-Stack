@@ -4,6 +4,7 @@ import { Box, Button, Typography, styled } from '@mui/material';
 import { fetchCart } from '../../../redux/CartSlice'; // Adjust path if needed
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 // ================= Styled Components =================
 
@@ -226,8 +227,7 @@ const MiddleButton = styled(Button)(({ theme }) => ({
 }));
 
 
-
-const CartItem = ({ item, removeItem }) => {
+const CartItem = ({ item, removeItem, onQuantityChange }) => {
     const assure = 'https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/fa_9e47c1.png';
 
     return (
@@ -239,9 +239,19 @@ const CartItem = ({ item, removeItem }) => {
                 />
                 <QtyComponent>
                     <StyledButtonGroup>
-                        <CircleButton variant="outlined">-</CircleButton>
+                        <CircleButton
+                            onClick={() => onQuantityChange(item.product._id, 'decrease')}
+                            variant="outlined"
+                        >
+                            -
+                        </CircleButton>
                         <MiddleButton variant="outlined">{item.quantity}</MiddleButton>
-                        <CircleButton variant="outlined">+</CircleButton>
+                        <CircleButton
+                            onClick={() => onQuantityChange(item.product._id, 'increase')}
+                            variant="outlined"
+                        >
+                            +
+                        </CircleButton>
                     </StyledButtonGroup>
                 </QtyComponent>
             </LeftBox>
@@ -249,21 +259,25 @@ const CartItem = ({ item, removeItem }) => {
             <RightBox>
                 <RightText>{item.product?.productTitle}</RightText>
                 <Typography style={{ display: 'flex', alignItems: 'center' }}>
-                    <Box component={'span'} style={{ color: '#878787' }}>
+                    <Box component="span" style={{ color: '#878787' }}>
                         Seller: {item.product?.createdBy?.shopName}
                     </Box>
-                    <Box component={'span'}>
-                        <img src={assure} style={{ width: 50, marginLeft: 10, marginTop: 7 }} alt="" />
+                    <Box component="span">
+                        <img
+                            src={assure}
+                            style={{ width: 50, marginLeft: 10, marginTop: 7 }}
+                            alt=""
+                        />
                     </Box>
                 </Typography>
                 <Typography style={{ marginTop: 10 }}>
-                    <Box component={'span'} style={{ fontSize: 17, fontWeight: 600, color: 'black' }}>
+                    <Box component="span" style={{ fontSize: 17, fontWeight: 600, color: 'black' }}>
                         Tk {item.product?.productPriceAfterDiscount}
                     </Box>
-                    <Box component={'span'} style={{ color: '#878787', margin: '0 15px', fontSize: 14 }}>
+                    <Box component="span" style={{ color: '#878787', margin: '0 15px', fontSize: 14 }}>
                         <strike>Tk {item.product?.productPrice}</strike>
                     </Box>
-                    <Box component={'span'} style={{ color: '#388E3C', fontSize: 14 }}>
+                    <Box component="span" style={{ color: '#388E3C', fontSize: 14 }}>
                         {item.product?.productOffer}% off
                     </Box>
                 </Typography>
@@ -273,13 +287,15 @@ const CartItem = ({ item, removeItem }) => {
     );
 };
 
-// ========================== Main Cart Component ==========================
+// ========== Main Cart ==========
 
 const Cart = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { cart, error } = useSelector((state) => state.Cart);
 
-    const CartItems = cart?.cartItems || cart?.items || [];
+    const initialItems = cart?.cartItems || cart?.items || [];
+    const [localItems, setLocalItems] = useState(initialItems);
 
     const [price, setPrice] = useState(0);
     const [discount, setDiscount] = useState(0);
@@ -290,15 +306,20 @@ const Cart = () => {
     }, [dispatch]);
 
     useEffect(() => {
+        const items = cart?.cartItems || cart?.items || [];
+        setLocalItems(items);
+    }, [cart]);
+
+    useEffect(() => {
         totalAmount();
-    }, [CartItems]);
+    }, [localItems]);
 
     const totalAmount = () => {
         let totalPrice = 0;
         let totalDiscount = 0;
         let quantitySum = 0;
 
-        CartItems.forEach((item) => {
+        localItems.forEach((item) => {
             const quantity = item.quantity || 1;
             const mrp = item.product?.productPrice || 0;
             const discounted = item.product?.productPriceAfterDiscount || 0;
@@ -313,21 +334,28 @@ const Cart = () => {
         setTotalQuantity(quantitySum);
     };
 
-    const deliveryCharges = 40;
-    const totalAmountPayable = price + deliveryCharges;
-    const totalSavings = discount - deliveryCharges;
+    const handleQuantityChange = (productId, type) => {
+        const updatedItems = localItems.map(item => {
+            if (item.product._id === productId) {
+                const newQuantity =
+                    type === 'increase' ? item.quantity + 1 : item.quantity - 1;
+                return {
+                    ...item,
+                    quantity: newQuantity < 1 ? 1 : newQuantity,
+                };
+            }
+            return item;
+        });
+        setLocalItems(updatedItems);
+    };
 
-    if (error) return <Typography color="error">Error: {error}</Typography>;
-    // Move removeItem here:
     const removeItem = async (productId) => {
         try {
-            console.log('Removing item with ID:', productId);
             const res = await axios.delete(`http://localhost:5000/customer/remove/${productId}`, {
                 withCredentials: true,
             });
-            const data = res.data;
 
-            console.log('Remove response:', data);
+            const data = res.data;
 
             if (data.success) {
                 toast.success(data.message);
@@ -336,26 +364,53 @@ const Cart = () => {
                 toast.error(data.message);
             }
         } catch (error) {
-            console.error('Failed to remove item:', error);
             toast.error('Failed to remove item');
         }
     };
 
+    // Place Order
+    const handlePlaceOrder = () => {
+        const orderData = {
+            items: localItems,
+            price,
+            discount,
+            deliveryCharges,
+            totalAmount: price + deliveryCharges,
+            totalSavings: discount - deliveryCharges,
+        };
+        console.log("Order Data:", orderData);
+
+        localStorage.setItem("orderData", JSON.stringify(orderData));
+        navigate("/myaccount/checkout");
+    };
+
+
+    const deliveryCharges = 40;
+    const totalAmountPayable = price + deliveryCharges;
+    const totalSavings = discount - deliveryCharges;
+
+    if (error) return <Typography color="error">Error: {error}</Typography>;
+
     return (
         <Component>
-            {CartItems.length ? (
+            {localItems.length ? (
                 <>
                     <ContainerLeft>
                         <Header>
-                            <Typography variant="h6">My Cart ({CartItems.length})</Typography>
+                            <Typography variant="h6">My Cart ({localItems.length})</Typography>
                         </Header>
                         <Box className="p-3">
-                            {CartItems.map((item) => (
-                                <CartItem key={item._id} item={item} removeItem={removeItem} />
+                            {localItems.map((item) => (
+                                <CartItem
+                                    key={item._id}
+                                    item={item}
+                                    removeItem={removeItem}
+                                    onQuantityChange={handleQuantityChange}
+                                />
                             ))}
                         </Box>
-                        <ButtonWrapper>
-                            <StyledButton>Place Order</StyledButton>
+                        <ButtonWrapper className="flex">
+                            <StyledButton onClick={handlePlaceOrder}>Place Order</StyledButton>
                         </ButtonWrapper>
                     </ContainerLeft>
 
@@ -367,34 +422,45 @@ const Cart = () => {
                             <Container>
                                 <Typography>
                                     Price ({totalQuantity} {totalQuantity > 1 ? 'items' : 'item'})
-                                    <Box component={'span'} sx={{ float: 'right' }}>
+                                    <Box component="span" sx={{ float: 'right' }}>
                                         Tk {price.toFixed(2)}
                                     </Box>
                                 </Typography>
 
                                 <Typography>
                                     Discount
-                                    <Box component={'span'} sx={{ float: 'right' }}>
+                                    <Box component="span" sx={{ float: 'right' }}>
                                         -Tk {discount.toFixed(2)}
                                     </Box>
                                 </Typography>
 
                                 <Typography>
                                     Delivery Charges
-                                    <Box component={'span'} sx={{ float: 'right' }}>
+                                    <Box component="span" sx={{ float: 'right' }}>
                                         Tk {deliveryCharges.toFixed(2)}
                                     </Box>
                                 </Typography>
 
                                 <Typography variant="h6">
                                     Total Amount
-                                    <Box component={'span'} sx={{ float: 'right' }}>
+                                    <Box component="span" sx={{ float: 'right' }}>
                                         Tk {totalAmountPayable.toFixed(2)}
                                     </Box>
                                 </Typography>
 
                                 <DiscountBoxs>
-                                    You will save Tk {totalSavings.toFixed(2)} on this order
+                                    {
+                                        discount > 0 ? (
+                                            <Typography>
+                                                You will save  Tk {totalSavings.toFixed(2)} on this order
+
+                                            </Typography>
+                                        ) : (
+                                            <Typography>
+                                                You will save Tk 0 on this order
+                                            </Typography>
+                                        )
+                                    }
                                 </DiscountBoxs>
                             </Container>
                         </Box>

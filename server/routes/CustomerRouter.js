@@ -6,6 +6,6 @@ const Customerrouter = express.Router();
 
 Customerrouter.post('/cart/addtocart',requireSignin, isCustomer, AddToCart);    
 Customerrouter.get('/cart/getcart', requireSignin, isCustomer, GetCart);
-Customerrouter.delete('/remove/:id', RemoveFromCart);
+Customerrouter.delete('/remove/:id', requireSignin, isCustomer, RemoveFromCart);
 
 export default Customerrouter;

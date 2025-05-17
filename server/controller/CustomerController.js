@@ -1,5 +1,7 @@
 import CartModel from '../model/CartModel.js';
+import OrderModel from '../model/orderModel.js';
 
+// Add product to cart
 export const AddToCart = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -35,7 +37,7 @@ export const AddToCart = async (req, res) => {
           { $push: { cartItems: req.body.cartItems } },
           { new: true }
         );
-        console.log("Updated Cart:", updatedCart);
+
         return res.status(200).json({ success: true, message: "Product added to cart successfully", updatedCart });
       }
     }
@@ -45,6 +47,7 @@ export const AddToCart = async (req, res) => {
   }
 };
 
+// Get cart
 export const GetCart = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
@@ -61,6 +64,7 @@ export const GetCart = async (req, res) => {
   }
 };
 
+// Remove item from cart
 export const RemoveFromCart = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -86,6 +90,77 @@ export const RemoveFromCart = async (req, res) => {
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
+
+
+// Place order
+export const PlaceOrder = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const {
+      items,
+      address,
+      price,
+      discount,
+      deliveryCharges,
+      totalAmount,
+      totalSavings,
+      paymentMethod,
+    } = req.body;
+
+    // Basic validation
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ success: false, message: "Order must contain at least one item." });
+    }
+
+    if (!address || !address.fullName || !address.phone || !address.addressLine || !address.city || !address.postalCode) {
+      return res.status(400).json({ success: false, message: "Shipping address is incomplete." });
+    }
+
+    if (!paymentMethod || !["cod", "card"].includes(paymentMethod)) {
+      return res.status(400).json({ success: false, message: "Invalid payment method." });
+    }
+
+    // Construct each order item with correct structure
+    const orderItems = items.map(item => ({
+      product: item.product,
+      quantity: item.quantity,
+      price: item.price,
+    }));
+
+    // Create new order
+    const newOrder = new OrderModel({
+      user: userId,
+      items: orderItems,
+      address,
+      price,
+      discount,
+      deliveryCharges,
+      totalAmount,
+      totalSavings,
+      paymentMethod,
+      orderStatus: "Pending", // default status at placement
+    });
+
+    await newOrder.save();
+
+    // Delete the cart after placing the order
+    await CartModel.findOneAndDelete({ user: userId });
+
+    res.status(201).json({
+      success: true,
+      message: "Order placed successfully, cart has been cleared",
+      order: newOrder,
+    });
+
+  } catch (error) {
+    console.error("Order Placement Error:", error);
+    res.status(500).json({ success: false, message: "Something went wrong while placing order." });
+  }
+};
+
+
+
 
 
 

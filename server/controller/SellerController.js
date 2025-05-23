@@ -3,7 +3,7 @@ import slugify from "slugify";
 import userModel from "../model/userModel.js";
 import category from "../model/CategoriesModel.js";
 import mongoose from "mongoose";
-
+import OrderModel from "../model/OrderModel.js";
 // Create Product
 export const CreateProduct = async (request, response) => {
   try {
@@ -213,8 +213,6 @@ export const UpdateProduct = async (request, response) => {
 };
 
 
-
-
 // Delete Product
 export const DeleteProduct = async (request, response) => {
   try {
@@ -226,6 +224,34 @@ export const DeleteProduct = async (request, response) => {
     return response.status(200).json({success: true, message: "Product deleted successfully", product });
   } catch (e) {
     console.error("Error in DeleteProduct", e.message);
+    return response.status(500).json({success: false, message: "Server Error", error: e.message });
+  }
+};
+
+
+// Update Order Status
+export const UpdateOrderStatus = async (request, response) => {
+  try {
+    const orderId = request.params.id;
+    const { orderStatus } = request.body;
+
+    if (!orderStatus) {
+      return response.status(400).json({ message: "Order status is required" });
+    }
+
+    const updatedOrder = await OrderModel.findByIdAndUpdate(
+      orderId,
+      { orderStatus },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return response.status(404).json({ message: "Order not found" });
+    }
+
+    return response.status(200).json({success: true, message: "Order status updated successfully", updatedOrder });
+  } catch (e) {
+    console.error("Error in UpdateOrderStatus", e.message);
     return response.status(500).json({success: false, message: "Server Error", error: e.message });
   }
 };

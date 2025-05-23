@@ -129,7 +129,8 @@ export const PlaceOrder = async (req, res) => {
     }));
 
     // Create new order
-    const newOrder = new OrderModel({
+  if(paymentMethod === "cod"){
+      const newOrder = new OrderModel({
       user: userId,
       items: orderItems,
       address,
@@ -143,6 +144,7 @@ export const PlaceOrder = async (req, res) => {
     });
 
     await newOrder.save();
+  }
 
     // Delete the cart after placing the order
     await CartModel.findOneAndDelete({ user: userId });

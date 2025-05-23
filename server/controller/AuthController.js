@@ -1,6 +1,7 @@
 import userModel from "../model/userModel.js";
 import productModel from "../model/productModel.js";
 import categoriesModel from "../model/CategoriesModel.js";
+import OrderModel from "../model/orderModel.js";
 import jwt from "jsonwebtoken";
 import jwt_Token from "../dotenv/JWT_Token.js";
 import nodemailer from 'nodemailer';
@@ -224,6 +225,17 @@ export const GetAllCategories = async (req, res) => {
         res.status(200).json({success: true, message: "Categories fetched successfully",categories});
     } catch (e) {
         console.log("Error in getAllCategories", e.message);
+        res.status(500).json({ success: false, message: e.message });
+    }
+}
+
+// GetAllOrders
+export const AllOrders = async (req, res) => {
+    try {
+        const orders = await OrderModel.find({});
+        res.status(200).json({success: true, message: "Orders fetched successfully",orders});
+    } catch (e) {
+        console.log("Error in getAllOrders", e.message);
         res.status(500).json({ success: false, message: e.message });
     }
 }

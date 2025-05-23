@@ -5,7 +5,6 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 
-// import routes
 // import UserRouter from './routes/userRoute.js';
 import paymentRouter from './routes/paymentRouter.js';
 import Authrouters from './routes/AuthRouter.js';
@@ -17,6 +16,17 @@ import path from 'path';
 
 // Initialize express
 const app = express();
+
+// paytime
+import paytime from './dotenv/paytime.js';
+import SSLCommerzPayment from 'sslcommerz-lts';
+
+// Payment gateway
+const { store_id, store_passwd } = paytime;
+
+// sslcommerz payment gateway
+const is_live = false //true for live, false for sandbox
+
 
 // For __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);

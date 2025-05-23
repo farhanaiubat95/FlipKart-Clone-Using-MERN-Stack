@@ -115,9 +115,10 @@ export const requireSignin = async (req, res, next) => {
         }
         const decoded = jwt.verify(token, jwt_Token);
         const user = await userModel.findById(decoded.userId);
-        if (!user) {
-            return res.status(401).json({ message: "User not found", error: error.message });
+       if (!token) {
+         return res.status(401).json({ message: "No token found" }); // ✅ Removed error.message
         }
+
         req.user = user;
         next();
     } catch (error) {

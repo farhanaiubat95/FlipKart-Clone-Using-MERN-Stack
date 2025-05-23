@@ -11,4 +11,7 @@
   ],
 }, { timestamps: true });
 
- export default mongoose.model("Cart", CartSchema);
+
+ const CartModel = mongoose.models.Cart || mongoose.model("Cart", CartSchema);
+
+export default CartModel;

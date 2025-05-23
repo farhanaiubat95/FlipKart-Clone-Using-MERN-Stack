@@ -1,6 +1,6 @@
 import express from 'express';
 import { isSeller } from '../middleware/VerifyToken.js';
-import { CreateProduct, UpdateProduct, DeleteProduct } from '../controller/SellerController.js';
+import { CreateProduct, UpdateProduct, DeleteProduct , UpdateOrderStatus} from '../controller/SellerController.js';
 import { nanoid } from 'nanoid';
 import multer from 'multer';
 import path from 'path';
@@ -24,5 +24,7 @@ const upload = multer({ storage });
 Sellerrouter.post('/dashboard/create-product',isSeller,upload.array('productImage'),CreateProduct);
 Sellerrouter.put('/update-product/:id',isSeller,upload.array('productImage'),UpdateProduct);
 Sellerrouter.delete('/delete-product/:id',isSeller,DeleteProduct);
+
+Sellerrouter.put('/order-status/:id',isSeller,UpdateOrderStatus);
 
 export default Sellerrouter;

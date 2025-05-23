@@ -36,6 +36,10 @@ import Notification from '../components/Admin/Notification.jsx';
 import Products from '../components/Seller/Products.jsx';
 import DetailView from '../components/details/DetailView.jsx';
 import Checkout from '../components/Customer/cart/Checkout.jsx';
+import PaymentSuccess from '../components/Customer/cart/PaymentSuccess.jsx';
+import AllOrders from '../components/Customer/cart/AllOrders.jsx';
+import OrderList from '../components/Seller/OrderList.jsx';
+import AllUser from '../components/Seller/AllUser.jsx';
 const Routers = () => {
   return (
     <>
@@ -72,7 +76,8 @@ const Routers = () => {
             <Route index element={<CustomerHome />} />
             <Route path="cart" element={<Cart />} />
             <Route path="checkout" element={<Checkout />} />
-
+            <Route path="payment-success/:tran_id" element={<PaymentSuccess />} />
+            <Route path="AllOrders" element={<AllOrders />} />
           </Route>
         </Route>
 
@@ -99,8 +104,9 @@ const Routers = () => {
           <Route path="/seller" element={<SellerLayout />}>
             <Route path='dashboard' element={<SellerDashboard />} >
               <Route index element={<MainSeller />} />
-
               <Route path="products" element={<Products />} />
+              <Route path="orderlist" element={<OrderList />} />
+              <Route path="alluser" element={<AllUser />} />
               
             </Route>
           </Route>

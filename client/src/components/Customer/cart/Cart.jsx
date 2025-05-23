@@ -10,7 +10,8 @@ import { useNavigate } from 'react-router-dom';
 
 const Component = styled(Box)(({ theme }) => ({
     width: '70%',
-    margin: '90px auto',
+    margin: '0px auto',
+    padding: '90px 0',
     display: 'flex',
     justifyContent: 'center',
     gap: '20px',
@@ -467,7 +468,7 @@ const Cart = () => {
                     </ContainerRight>
                 </>
             ) : (
-                <Box width="100%">
+                <Box width="100%"  height={"40vh"}>
                     <Typography variant="h5" align="center" mt={10}>
                         Your cart is empty.
                     </Typography>

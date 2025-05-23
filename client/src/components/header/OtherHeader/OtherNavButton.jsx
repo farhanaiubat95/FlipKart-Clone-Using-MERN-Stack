@@ -17,61 +17,28 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
+import PlaylistAddCheckCircleIcon from '@mui/icons-material/PlaylistAddCheckCircle';
 
-// Styled components
 const StyledBox = styled(Box)(({ theme }) => ({
   margin: '0 3% 0 auto',
   lineHeight: 0,
   display: 'flex',
   alignItems: 'center',
-
   '& > p, & > div': {
     marginRight: '30px',
     fontSize: '16px',
     fontWeight: 500,
     cursor: 'pointer',
   },
-
-  '& .cart1, & .dropdown-menu': {
-    display: 'none',
-  },
-
   [theme.breakpoints.down('md')]: {
     display: 'block',
     margin: '0 auto',
     width: '100%',
-
-    '& .cart1': {
-      display: 'flex',
-    },
-
-    '& .cart2': {
-      display: 'none',
-    },
-
     '& > p, & > div': {
       marginRight: '0',
       fontSize: '14px',
-      fontWeight: 500,
-      cursor: 'pointer',
       color: 'black',
     },
-
-    // '& > p:nth-of-type(2)': {
-    //   display: 'none',
-    // },
-
-    // '& > div:nth-of-type(3)': {
-    //   display: 'none',
-    // },
-
-    '& .dropdown-menu': {
-      display: 'none',
-    },
-  },
-
-  '& .hidden': {
-    display: 'none',
   },
 }));
 
@@ -88,7 +55,6 @@ const StyledLink = styled(Button)(({ theme }) => ({
   borderRadius: 0,
   marginLeft: '40px',
   textDecoration: 'none',
-
   [theme.breakpoints.down('md')]: {
     margin: '20px auto',
     width: '100%',
@@ -99,7 +65,6 @@ const StyledLink = styled(Button)(({ theme }) => ({
     fontWeight: 'bold',
     boxShadow: 'none',
     textAlign: 'center',
-
     '&:hover': {
       background: 'rgba(191, 193, 198, 0.32)',
       boxShadow: 'none',
@@ -123,17 +88,13 @@ const StyledNavLink = styled(Link)(({ theme }) => ({
   justifyContent: 'center',
   gap: '5px',
   textDecoration: 'none',
-
   [theme.breakpoints.down('md')]: {
     width: '100%',
     marginBottom: '15px',
-    borderRadius: '5px',
     padding: '10px 0',
-
     '&:hover': {
       background: 'rgba(191, 193, 198, 0.32)',
     },
-
     '& > *': {
       fontSize: '16px',
       whiteSpace: 'nowrap',
@@ -148,30 +109,23 @@ const StyleIcon = styled(Box)(({ theme }) => ({
   borderRadius: '5px',
   transition: 'all 0.3s ease-in-out',
   marginLeft: '20px',
-  display: 'block',
   position: 'relative',
-
   '&:hover .icon-box': {
     display: 'block',
   },
-
   '&:hover .arrow-icon': {
     transform: 'rotate(180deg)',
-    transition: 'transform 0.2s linear',
   },
-
   [theme.breakpoints.down('md')]: {
     width: '100%',
     marginBottom: '15px',
+    padding: '10px 0',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '10px 0',
-
     '& > *': {
       color: 'white',
     },
-
     '&:hover': {
       background: 'rgba(191, 193, 198, 0.32)',
     },
@@ -188,7 +142,6 @@ const StyleIconBox = styled(Box)(({ theme }) => ({
   top: '38px',
   right: 0,
   display: 'none',
-
   [theme.breakpoints.down('md')]: {
     left: '-25px',
     top: '42px',
@@ -200,17 +153,14 @@ const StyledIconText = styled(Link)(({ theme }) => ({
   alignItems: 'center',
   textDecoration: 'none',
   padding: '10px 10px',
-
   '&:hover': {
     backgroundColor: '#c0b2b224',
   },
-
   '& > svg': {
     fontSize: '20px',
     color: '#4c4848',
     marginRight: '16px',
   },
-
   '& > ': {
     fontSize: '15px',
     fontWeight: 500,
@@ -220,11 +170,6 @@ const StyledIconText = styled(Link)(({ theme }) => ({
 
 const StyledLoginButton = styled(Box)(({ theme }) => ({
   position: 'relative',
-
-  '& .dropdown-menu': {
-    display: 'none',
-  },
-
   '&:hover .dropdown-menu': {
     display: 'flex',
   },
@@ -241,7 +186,6 @@ const DropdownMenu = styled(Box)(({ theme }) => ({
   zIndex: 100,
   display: 'none',
   flexDirection: 'column',
-
   '& a, & div': {
     padding: '20px 10px',
     textAlign: 'center',
@@ -249,12 +193,10 @@ const DropdownMenu = styled(Box)(({ theme }) => ({
     color: 'black',
     textDecoration: 'none',
     cursor: 'pointer',
-
     '&:hover': {
       backgroundColor: '#f5f5f5',
     },
   },
-
   [theme.breakpoints.down('md')]: {
     left: '-25px',
     top: '42px',
@@ -263,6 +205,7 @@ const DropdownMenu = styled(Box)(({ theme }) => ({
 
 const OtherNavButton = () => {
   const user = useSelector((state) => state.Auth.user);
+  const cartItems = useSelector((state) => state.Cart.cart?.cartItems || []);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -280,7 +223,7 @@ const OtherNavButton = () => {
     }
   };
 
-  const userRole = user?.role;
+  const userRole = user?.role || null;
 
   return (
     <StyledBox>
@@ -294,7 +237,6 @@ const OtherNavButton = () => {
             Login
           </StyledLink>
         )}
-
         {user && (
           <DropdownMenu className="dropdown-menu">
             <Link to="/profile">Profile</Link>
@@ -303,30 +245,48 @@ const OtherNavButton = () => {
         )}
       </StyledLoginButton>
 
-      <Box style={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
-        {(!userRole || userRole === "customer") && (
-          <StyledNavLink to={"/myaccount/cart"}>
-            <Box style={{ display: "flex", alignItems: "center" }}>
-              <ShoppingCart />
-              <Typography style={{ fontWeight: 500, marginLeft: 5 }}>&nbsp;Cart</Typography>
-            </Box>
+      <Box style={{ display: "flex", alignItems: "center" }}>
+        {userRole === "customer" && (
+          <>
+            <StyledNavLink to={"/myaccount/cart"}>
+              <Badge
+                badgeContent={cartItems.length}
+                color="secondary"
+                sx={{
+                  '& .MuiBadge-badge': {
+                    backgroundColor: '#7D0A0A',
+                    color: 'white',
+                    right: -7,
+                    top: 2,
+                  },
+                }}
+              >
+                <Box style={{ display: "flex", alignItems: "center" }}>
+                  <ShoppingCart />
+                  <Typography style={{ fontWeight: 500, marginLeft: 5 }}>&nbsp;Cart</Typography>
+                </Box>
+              </Badge>
+            </StyledNavLink>
+
+            <StyledNavLink to={"/myaccount/AllOrders"}>
+              <Box style={{ display: "flex", alignItems: "center" }}>
+                <PlaylistAddCheckCircleIcon />
+                <Typography style={{ fontWeight: 500, marginLeft: 5 }}>&nbsp;Order List</Typography>
+              </Box>
+            </StyledNavLink>
+          </>
+        )}
+
+        {user && userRole === "admin" && (
+          <StyledNavLink to={"/admin/dashboard"}>
+            <Typography style={{ fontWeight: 500 }}>Dashboard</Typography>
           </StyledNavLink>
         )}
 
-        {user && (
-          <>
-            {userRole === "admin" && (
-              <StyledNavLink to={"/admin/dashboard"}>
-                <Typography style={{ fontWeight: 500 }}>Dashboard</Typography>
-              </StyledNavLink>
-            )}
-
-            {userRole === "seller" && (
-              <StyledNavLink to={"/seller/dashboard"}>
-                <Typography style={{ fontWeight: 500 }}>Become a Seller</Typography>
-              </StyledNavLink>
-            )}
-          </>
+        {user && userRole === "seller" && (
+          <StyledNavLink to={"/seller/dashboard"}>
+            <Typography style={{ fontWeight: 500 }}>Become a Seller</Typography>
+          </StyledNavLink>
         )}
 
         {!user && (
@@ -340,7 +300,6 @@ const OtherNavButton = () => {
             <span>More</span>&nbsp;
             <KeyboardArrowDownIcon className="arrow-icon" style={{ fontSize: 16 }} />
           </Typography>
-
           <StyleIconBox className="icon-box">
             <StyledIconText><NotificationsNoneIcon /><Typography>Notification Preferences</Typography></StyledIconText>
             <StyledIconText><HeadsetMicIcon /><Typography>24x7 Customer Care</Typography></StyledIconText>

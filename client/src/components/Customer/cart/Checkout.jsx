@@ -13,8 +13,10 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const Checkout = () => {
+  const user= useSelector((state) => state.Auth.user);
   const [order, setOrder] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [openModal, setOpenModal] = useState(false);
@@ -104,9 +106,37 @@ const Checkout = () => {
         alert("Something went wrong while placing your order.");
       }
     } else {
-      navigate("/payment", { state: { order, address } });
+      try {
+        const response= fetch("http://localhost:5000/payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            items: items.map((item) => ({
+              product: item.product._id,
+              quantity: item.quantity,
+              price: item.product.productPriceAfterDiscount,
+            })),
+            userId: user._id,
+            address,
+            deliveryCharges,
+            paymentMethod: "card",
+          }),
+        }).then((res) => res.json())
+        .then((result) => {
+          window.location.replace(result.url);      
+          console.log("Payment Response:", result);
+        });
+        
+      } catch (error) {
+        console.error("Payment Error:", error);
+        alert("Something went wrong while processing your payment.");
+      }
+
     }
-  };
+  }
+
 
 
   return (
@@ -258,5 +288,6 @@ const Checkout = () => {
     </Box>
   );
 };
+
 
 export default Checkout;

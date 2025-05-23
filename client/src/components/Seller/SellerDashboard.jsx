@@ -13,6 +13,9 @@ import {
 import { IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 
+import PlaylistAddCheckCircleIcon from '@mui/icons-material/PlaylistAddCheckCircle';
+
+
 const SellerDashboard = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.Auth.user);
@@ -50,8 +53,18 @@ const SellerDashboard = () => {
             <ListAltIcon /> <span>Products</span>
           </button>
 
-          <button className="w-full text-left cursor-pointer py-2 px-3 flex items-center gap-2 hover:bg-gray-600 rounded">
+          <button 
+          className="w-full text-left cursor-pointer py-2 px-3 flex items-center gap-2 hover:bg-gray-600 rounded"
+          onClick={() => navigate("/seller/dashboard/alluser")}
+          >
             <PeopleAltIcon /> <span>Total Users</span>
+          </button>
+
+          <button 
+          className="w-full text-left cursor-pointer py-2 px-3 flex items-center gap-2 hover:bg-gray-600 rounded"
+          onClick={() => navigate("/seller/dashboard/orderlist")}
+          >
+            <PlaylistAddCheckCircleIcon /> <span>Order List</span>
           </button>
 
           <button className="w-full text-left cursor-pointer py-2 px-3 flex items-center gap-2 hover:bg-gray-600 rounded">
@@ -77,17 +90,13 @@ const SellerDashboard = () => {
         </div>
 
         {/* Top Right Header */}
-        <header className="flex items-center justify-between p-2 bg-gray-800 text-white rounded">
-          <div>
-            <button className="bg-[#246275] hover:bg-[#246275]/80 text-white py-1 px-4 rounded cursor-pointer">Add New Product</button>
-          </div>
-          <div className="flex items-center">
+        <header className="flex items-center justify-end p-2 bg-gray-800 text-white rounded">
+
             <div className="px-4"><Notifications /></div>
             <div className="flex items-center space-x-2 px-4">
               <Person />
               <span>{user.firstname} {user.lastname}</span>
             </div>
-          </div>
         </header>
 
         <Outlet />

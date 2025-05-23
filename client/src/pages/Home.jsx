@@ -77,12 +77,14 @@ const Home = () => {
 
   // fetch orders
   const fetchOrders = () => {
-    get('http://localhost:5000/allorders')
+    get('http://localhost:5000/allOrders')
       .then(res => {
+        console.log('Fetched Orders:', res.data); 
         dispatch(SetOrders(res.data.orders));
       })
-      .catch(error => console.error(error));
+      .catch(error => console.error('Orders Fetch Error:', error));
   };
+
 
   useEffect(() => {
     fetchProducts();

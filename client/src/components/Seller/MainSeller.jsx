@@ -19,7 +19,7 @@ const chartData = {
 const MainSeller = () => {
   return (
     <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-10">Seller Dashboard</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-10">Seller Dashboard</h2>
       {/* Top Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Sign ups Card */}
@@ -27,7 +27,7 @@ const MainSeller = () => {
           <CardContent className="flex justify-between items-center">
             <div>
               <Typography variant="h6">Sign ups</Typography>
-              <Typography variant="h4">114</Typography>
+              <Typography variant="h4">2</Typography>
               <Typography variant="body2">+25% from last month</Typography>
             </div>
             <BarChart2 className="text-white text-3xl" />
@@ -39,7 +39,7 @@ const MainSeller = () => {
           <CardContent className="flex justify-between items-center">
             <div>
               <Typography variant="h6">Revenue</Typography>
-              <Typography variant="h4">$25,541</Typography>
+              <Typography variant="h4">Tk 25,541</Typography>
               <Typography variant="body2">+17.5% from last month</Typography>
             </div>
             <ShoppingCart className="text-white text-3xl" />
@@ -50,8 +50,8 @@ const MainSeller = () => {
         <Card className="bg-red-500 text-white">
           <CardContent className="flex justify-between items-center">
             <div>
-              <Typography variant="h6">Open tickets</Typography>
-              <Typography variant="h4">5</Typography>
+              <Typography variant="h6">All Orders</Typography>
+              <Typography variant="h4">3</Typography>
             </div>
             <Phone className="text-white text-3xl" />
           </CardContent>

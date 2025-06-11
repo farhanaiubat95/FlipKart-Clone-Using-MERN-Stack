@@ -58,7 +58,7 @@ const ColumnText = styled(TableRow)`
 `
 
 const ProductDetails = ({ product }) => {
-    const user =useSelector((state) => state.Auth.user);
+    const user = useSelector((state) => state.Auth.user);
     console.log("User:", user);
     const [selectedOption, setSelectedOption] = useState("withoutExchange");
 
@@ -85,14 +85,23 @@ const ProductDetails = ({ product }) => {
                             <Box component={"span"} style={{ color: '#878787', margin: '0 15px', fontSize: 16 }}><strike>Tk  {product.productPrice}</strike></Box>
                             <Box component={"span"} style={{ color: '#388E3C', fontSize: 16 }}>{product.productOffer}% off</Box>
                         </>
-                    ): (
+                    ) : (
                         <Box component={"span"} style={{ fontSize: 28, fontWeight: 600 }}>Tk   {product.productPrice}</Box>
                     )
                 }
             </Box>
 
             {/* part 2  Available offers*/}
-            <Box style={{ width: 710 }}>
+            <Box
+                sx={{
+                    width: {
+                        xs: '100%',     // extra small screens
+                        sm: '90%',      // small screens
+                        md: '710px',    // medium and up
+                    },
+                    margin: 'auto',
+                }}
+            >
                 <Typography style={{ color: '#878787', fontWeight: 600, fontSize: 17, marginTop: 20 }}>Available offers</Typography>
                 {/* 1 */}
                 <Typography style={{ fontWeight: 400, fontSize: 14, marginTop: 10, display: 'flex', alignItems: 'center' }}>
@@ -211,7 +220,7 @@ const ProductDetails = ({ product }) => {
                     <ColumnText  >
                         <TableCell style={{ color: '#878787' }}>Description</TableCell>
                         <TableCell style={{ fontWeight: 600 }}>
-                           {product.productDescription}</TableCell>
+                            {product.productDescription}</TableCell>
                     </ColumnText  >
                 </TableBody>
             </Box>

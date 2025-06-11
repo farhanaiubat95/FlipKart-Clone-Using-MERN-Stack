@@ -80,11 +80,18 @@ const Products = () => {
     };
 
     const handleDelete = async (id) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+        if (!confirmDelete) return;
+
         try {
-            const res = await axios.delete(`http://localhost:5000/seller/delete-product/${id}`);
+            const res = await axios.delete(
+                `http://localhost:5000/seller/delete-product/${id}`,
+                { withCredentials: true }
+            );
+
             if (res.data.success) {
                 toast.success("Product deleted successfully");
-                fetchProducts();
+                fetchProducts(); // Refresh product list in table
             } else {
                 toast.error(res.data.message);
             }
@@ -93,6 +100,8 @@ const Products = () => {
             toast.error("Failed to delete product");
         }
     };
+
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -250,7 +259,7 @@ const Products = () => {
                             variant="outlined"
                             sx={{ padding: "10px", backgroundColor: "#5c5d3c", color: "white" }}
                         >
-                            Cancel Edit
+                            Add New Product
                         </Button>
                     )}
                 </Box>

@@ -92,9 +92,9 @@ const HomeNav = () => {
   return (
     <StyledBox className='w-[90%] m-auto overflow-hidden'>
 
-      <Grid container spacing={2}>
+      <Grid container >
         {mainCategories.map((cat) => (
-          <Grid item xs={2} key={cat._id}>
+          <Grid item xs={3} key={cat._id}>
             <StyledBox1 href={`/category/${cat.slug}`}>
               <img src={cat.categoryImage} alt={cat.categoryName} className='w-[64px] h-[64px]' />
               <StyleIcon style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

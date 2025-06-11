@@ -1,0 +1,16 @@
+_id,categoryName,categoryImage,slug,createdAt,updatedAt,__v,parentId
+68190e11f55576064e567ee8,Electronics,https://rukminim2.flixcart.com/fk-p-flap/65/65/image/4d6b13d5a0e0724a.png?q=100,Electronics,2025-05-05T19:14:25.244Z,2025-05-13T00:47:38.800Z,0,
+68190ea1f55576064e567eee,Fashions,https://rukminim2.flixcart.com/fk-p-flap/65/65/image/ec2982e5564fe07c.png?q=100,Fashion,2025-05-05T19:16:49.548Z,2025-05-12T23:30:29.493Z,0,
+68190f31f55576064e567ef4,Tvs&Appliances,https://rukminim1.flixcart.com/fk-p-flap/128/128/image/9c64dfa667885ca9.png?q=100,TvsandAppliances,2025-05-05T19:19:13.541Z,2025-05-05T19:19:13.541Z,0,
+68190fdff55576064e567efa,Flight Bookings,https://rukminim1.flixcart.com/fk-p-flap/65/65/image/d9eea6cd0e7b68bb.png?q=100,Flight-Bookings,2025-05-05T19:22:07.283Z,2025-05-05T19:22:07.283Z,0,
+681910d6f55576064e567f00,Home & Kitchen,https://rukminim1.flixcart.com/fk-p-flap/65/65/image/febcb9896245caf4.png?q=100,Home-and-Kitchen,2025-05-05T19:26:14.931Z,2025-05-05T19:26:14.931Z,0,
+681916e5ce8c65bdd799b8ea,Women,https://rukminim1.flixcart.com/image/180/180/xif0q/sari/m/r/x/free-rama-saree-kakadiya-creation-unstitched-original-imahf3p8hhrvrwfw.jpeg?q=80,Women,2025-05-05T19:52:05.575Z,2025-05-05T19:52:05.575Z,0,68190ea1f55576064e567eee
+682267f983889036cdd96f63,Gaming,http://localhost:5000/uploads/e8-gamingItems.jpg,Gaming,2025-05-12T21:28:25.557Z,2025-05-12T21:28:25.557Z,0,68190e11f55576064e567ee8
+68226cd6ab55d6e2e3bfd1d8,Saree,http://localhost:5000/uploads/iS-saree.jpg,Saree,2025-05-12T21:49:10.053Z,2025-05-12T21:49:10.053Z,0,681916e5ce8c65bdd799b8ea
+6824791b793d4d1656219fd3,Two Wheelers,http://localhost:5000/uploads/at-bike.webp,Two-Wheelers,2025-05-14T11:06:03.284Z,2025-05-14T11:06:03.284Z,0,
+6824799e793d4d1656219ff8,"Beauty, Toy & More",http://localhost:5000/uploads/q9-Beauty Toy.png,Beauty-Toy-and-More,2025-05-14T11:08:14.723Z,2025-05-14T11:08:14.723Z,0,
+68247b8e793d4d165621a01b,Appliances,http://localhost:5000/uploads/nB-appliances.webp,Appliances,2025-05-14T11:16:30.279Z,2025-05-14T11:16:30.279Z,0,
+68247f6e793d4d165621a090,Kilo,http://localhost:5000/uploads/pJ-Kilo.webp,Kilo,2025-05-14T11:33:02.843Z,2025-05-14T11:33:02.843Z,0,
+6824864c793d4d165621a17e,Men's Grooming,http://localhost:5000/uploads/Uz-mens groom.jpg,Men's-Grooming,2025-05-14T12:02:20.336Z,2025-05-14T12:02:20.336Z,0,6824799e793d4d1656219ff8
+68248839793d4d165621a1f9,Food & Drinks,http://localhost:5000/uploads/1H-food.jpg,Food-and-Drinks,2025-05-14T12:10:33.649Z,2025-05-14T12:10:33.649Z,0,6824799e793d4d1656219ff8
+683171abf8a873bb2282f1f2,Mobile Collection,http://localhost:5000/uploads/4k-phone.webp,Mobile-Collection,2025-05-24T07:13:47.114Z,2025-05-24T07:14:38.614Z,0,68190e11f55576064e567ee8

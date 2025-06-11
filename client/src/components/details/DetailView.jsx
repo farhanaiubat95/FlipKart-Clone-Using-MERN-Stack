@@ -12,14 +12,14 @@ const Component = styled(Box)(({ theme }) => ({
     backgroundColor: '#f2f2f2',
     marginTop: '10px',
     maxWidth: '1366px',
-    width: '100%',
     margin: '0 auto',
 }));
 
 const Container = styled(Box)(() => ({
     width: '100%',
     backgroundColor: '#ffffff',
-    marginTop: '100px',
+    marginTop: '10px',
+    padding: '20px',
 
 }));
 
@@ -42,12 +42,12 @@ const DetailView = () => {
             {!loading && product &&
                 <Container >
 
-                    <div className='flex flex-col lg:flex-row justify-center px-10 xl:px-0 xl:gap-5'>
-                        <div className='w-[90%] lg:w-[40%]' >
+                    <div className='flex flex-col lg:flex-row justify-center lg:px-10 xl:px-0 xl:gap-5'>
+                        <div className='lg:w-[40%]' >
                             <ActionItems product={product} />
                         </div>
 
-                       <div className='w-[90%] lg:w-[60%]'>
+                       <div className=' lg:w-[60%]'>
                          <ProductDetails  product={product} />
                        </div>
                     </div>

@@ -15,7 +15,7 @@ const Footer = () => {
                         </Typography>
                         <Box className="flex flex-col gap-1">
                             {['Contact Us', 'About Us', 'Careers', 'Flipkart Stories', 'Press', 'Corporate Information'].map(item => (
-                                <Link href="#" key={item} sx={{ color: 'white', textDecoration: 'none', '&:hover': { color: 'gray' , textDecoration: 'underline' } }}>{item}</Link>
+                                <Link href="#" key={item} sx={{ color: 'white', textDecoration: 'none', '&:hover': { color: 'gray', textDecoration: 'underline' } }}>{item}</Link>
                             ))}
                         </Box>
                     </Grid>
@@ -27,7 +27,7 @@ const Footer = () => {
                         </Typography>
                         <Box className="flex flex-col gap-1">
                             {['Myntra', 'Cleartrip', 'Shopsy'].map(item => (
-                                <Link href="#" key={item} sx={{ color: 'white', textDecoration: 'none', '&:hover': { color: 'gray' , textDecoration: 'underline' }  }}>{item}</Link>
+                                <Link href="#" key={item} sx={{ color: 'white', textDecoration: 'none', '&:hover': { color: 'gray', textDecoration: 'underline' } }}>{item}</Link>
                             ))}
                         </Box>
                     </Grid>
@@ -39,7 +39,7 @@ const Footer = () => {
                         </Typography>
                         <Box className="flex flex-col gap-1">
                             {['Payments', 'Shipping', 'Cancellation & Returns', 'FAQ'].map(item => (
-                                <Link href="#" key={item} sx={{ color: 'white', textDecoration: 'none','&:hover': { color: 'gray' , textDecoration: 'underline' }  }}>{item}</Link>
+                                <Link href="#" key={item} sx={{ color: 'white', textDecoration: 'none', '&:hover': { color: 'gray', textDecoration: 'underline' } }}>{item}</Link>
                             ))}
                         </Box>
                     </Grid>
@@ -51,7 +51,7 @@ const Footer = () => {
                         </Typography>
                         <Box className="flex flex-col gap-1">
                             {['Cancellation & Returns', 'Terms Of Use', 'Security', 'Privacy', 'Sitemap', 'Grievance Redressal', 'EPR Compliance'].map(item => (
-                                <Link href="#" key={item} sx={{ color: 'white', textDecoration: 'none', '&:hover': { color: 'gray' , textDecoration: 'underline' }  }}>{item}</Link>
+                                <Link href="#" key={item} sx={{ color: 'white', textDecoration: 'none', '&:hover': { color: 'gray', textDecoration: 'underline' } }}>{item}</Link>
                             ))}
                         </Box>
                     </Grid>
@@ -66,14 +66,14 @@ const Footer = () => {
                             Buildings Alyssa, Begonia & Clove Embassy Tech Village,<br />
                             Outer Ring Road, Devarabeesanahalli Village,<br />
                             Bengaluru, 560103,<br />
-                            Karnataka, India
+                            Karnataka, Bangladesh
                         </Typography>
 
                         <Box className="flex gap-3 mt-4">
-                            <Facebook fontSize="small" className="text-white hover:text-gray-300 cursor-pointer" />
-                            <Twitter fontSize="small" className="text-white hover:text-gray-300 cursor-pointer" />
-                            <YouTube fontSize="small" className="text-white hover:text-gray-300 cursor-pointer" />
-                            <Instagram fontSize="small" className="text-white hover:text-gray-300 cursor-pointer" />
+                            <Link><Facebook fontSize="small" className="text-white hover:text-gray-300 cursor-pointer" /></Link>
+                            <Link><Twitter fontSize="small" className="text-white hover:text-gray-300 cursor-pointer" /></Link>
+                            <Link href="https://www.youtube.com/@techcodismwithfarhana"><YouTube fontSize="small" className="text-white hover:text-gray-300 cursor-pointer" /></Link>
+                            <Link><Instagram fontSize="small" className="text-white hover:text-gray-300 cursor-pointer" /></Link>
                         </Box>
                     </Grid>
 
@@ -87,7 +87,7 @@ const Footer = () => {
                             Buildings Alyssa, Begonia & Clove Embassy Tech Village,<br />
                             Outer Ring Road, Devarabeesanahalli Village,<br />
                             Bengaluru, 560103,<br />
-                            Karnataka, India<br />
+                            Karnataka, Bangladesh<br />
                             CIN: <span className="text-gray-400">U51109KA2012PTC066107</span><br />
                             Telephone: <span className="text-gray-400">044-45614700 / 044-67415800</span>
                         </Typography>

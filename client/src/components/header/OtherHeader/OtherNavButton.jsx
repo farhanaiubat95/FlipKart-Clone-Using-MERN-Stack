@@ -152,6 +152,7 @@ const StyledIconText = styled(Link)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   textDecoration: 'none',
+  color: '#4c4848',
   padding: '10px 10px',
   '&:hover': {
     backgroundColor: '#c0b2b224',
